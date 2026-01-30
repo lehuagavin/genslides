@@ -101,13 +101,13 @@ export function Preview({ onGenerate, onDeleteImage }: PreviewProps): JSX.Elemen
   }
 
   return (
-    <div className="flex h-full flex-col bg-[var(--md-cream)]">
+    <div className="flex h-full flex-col bg-[var(--md-cream)] overflow-auto">
       {/* Main image area with floating thumbnails */}
-      <div className="relative flex-1 flex items-center justify-center p-2">
+      <div className="relative flex-1 flex items-center justify-center px-4 pt-2 pb-4 min-h-0">
         <MainImage image={displayedImage} isGenerating={isGenerating} hasMatchedImage={hasMatchedImage} />
 
-        {/* Floating thumbnail list at bottom center */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+        {/* Floating thumbnail list at bottom center of image */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
           <ThumbnailList
             images={images}
             currentHash={displayedImage?.hash || null}

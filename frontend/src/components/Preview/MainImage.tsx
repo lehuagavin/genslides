@@ -15,7 +15,7 @@ export function MainImage({ image, isGenerating, hasMatchedImage = false }: Main
   return (
     <div
       className={cn(
-        "relative w-full max-h-full aspect-video overflow-hidden",
+        "relative w-full max-h-full aspect-video",
         "border-3 border-[var(--md-graphite)] bg-[var(--md-cloud)]",
         "shadow-[6px_6px_0_0_rgba(0,0,0,1)]"
       )}
