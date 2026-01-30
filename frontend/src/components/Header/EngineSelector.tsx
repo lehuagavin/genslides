@@ -44,11 +44,11 @@ export function EngineSelector(): JSX.Element {
 
   return (
     <div className="flex items-center gap-2">
-      <label className="text-sm font-medium text-gray-600">引擎:</label>
+      <label className="text-xs font-medium text-[var(--md-slate)]">引擎:</label>
       <select
         value={imageEngine}
         onChange={handleEngineChange}
-        className="px-3 py-1.5 border border-gray-300 rounded-md text-sm bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+        className="px-2 py-1 border-2 border-[var(--md-graphite)] rounded text-xs bg-[var(--md-cloud)] text-[var(--md-ink)] font-medium hover:bg-[var(--md-fog)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sky-strong)] transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
       >
         <option value="gemini">Google Gemini</option>
         <option value="volcengine">火山引擎 Seedream</option>

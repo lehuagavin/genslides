@@ -150,7 +150,7 @@ export function HomePage({ onSelectProject }: HomePageProps): JSX.Element {
         <div className="w-full max-w-3xl">
           {/* Create new project section */}
           <div className="mb-12">
-            <h2 className="mb-4 text-lg font-bold uppercase tracking-wider">
+            <h2 className="mb-4 text-lg font-bold uppercase tracking-wider text-[var(--md-ink)]">
               Create New Project
             </h2>
             <div className="flex gap-4">
@@ -175,17 +175,19 @@ export function HomePage({ onSelectProject }: HomePageProps): JSX.Element {
           {/* Existing projects section */}
           {projects.length > 0 && (
             <div>
-              <h2 className="mb-4 text-lg font-bold uppercase tracking-wider">
+              <h2 className="mb-4 text-lg font-bold uppercase tracking-wider text-[var(--md-ink)]">
                 Existing Projects ({projects.length})
               </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
                 {projects.map((project) => (
                   <div
                     key={project.slug}
                     className={cn(
-                      "md-card group relative",
-                      "flex flex-col p-4 transition-shadow hover:shadow-lg"
+                      "md-card group relative cursor-pointer",
+                      "flex flex-col p-6 transition-all",
+                      "hover:translate-x-1 hover:-translate-y-1 hover:shadow-[-4px_4px_0_0_rgba(0,0,0,1)]"
                     )}
+                    onClick={() => onSelectProject(project.slug)}
                   >
                     {/* Delete button */}
                     <button
@@ -194,45 +196,43 @@ export function HomePage({ onSelectProject }: HomePageProps): JSX.Element {
                         setDeleteTarget(project);
                       }}
                       className={cn(
-                        "absolute right-2 top-2 p-1.5 rounded",
+                        "absolute right-3 top-3 p-1.5 rounded-sm",
+                        "border-2 border-transparent",
                         "text-[var(--md-slate)] hover:text-[var(--md-watermelon)]",
-                        "hover:bg-[var(--md-watermelon)]/10",
-                        "opacity-0 group-hover:opacity-100 transition-opacity"
+                        "hover:border-[var(--md-graphite)] hover:bg-[var(--md-cloud)]",
+                        "opacity-0 group-hover:opacity-100 transition-all"
                       )}
                       title="Delete project"
                     >
                       <svg
-                        width="16"
-                        height="16"
+                        width="14"
+                        height="14"
                         viewBox="0 0 16 16"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="1.5"
+                        strokeWidth="2"
                       >
                         <path d="M2 4h12M5.333 4V2.667a1.333 1.333 0 011.334-1.334h2.666a1.333 1.333 0 011.334 1.334V4m2 0v9.333a1.333 1.333 0 01-1.334 1.334H4.667a1.333 1.333 0 01-1.334-1.334V4h9.334z" />
                         <path d="M6.667 7.333v4M9.333 7.333v4" />
                       </svg>
                     </button>
 
-                    {/* Project info - clickable */}
-                    <button
-                      onClick={() => onSelectProject(project.slug)}
-                      className="flex flex-1 flex-col text-left"
-                    >
-                      <h3 className="font-bold text-[var(--md-ink)] pr-6 line-clamp-2">
+                    {/* Project info */}
+                    <div className="flex flex-1 flex-col">
+                      <h3 className="font-bold text-[var(--md-ink)] pr-8 line-clamp-2 mb-3">
                         {project.title || project.slug}
                       </h3>
-                      <div className="mt-2 flex items-center gap-2 text-xs text-[var(--md-slate)]">
-                        <span className="flex items-center gap-1">
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                      <div className="mt-2 flex items-center gap-3 text-xs text-[var(--md-slate)]">
+                        <span className="flex items-center gap-1.5">
+                          <svg width="14" height="14" viewBox="0 0 12 12" fill="currentColor">
                             <rect x="1" y="2" width="10" height="8" rx="1" opacity="0.3" />
                             <rect x="2" y="3" width="8" height="6" rx="0.5" />
                           </svg>
                           {project.slide_count} slide{project.slide_count !== 1 ? "s" : ""}
                         </span>
                         {project.has_style && (
-                          <span className="flex items-center gap-1">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                          <span className="flex items-center gap-1.5">
+                            <svg width="14" height="14" viewBox="0 0 12 12" fill="currentColor">
                               <circle cx="6" cy="6" r="5" opacity="0.3" />
                               <circle cx="6" cy="6" r="3" />
                             </svg>
@@ -240,10 +240,10 @@ export function HomePage({ onSelectProject }: HomePageProps): JSX.Element {
                           </span>
                         )}
                       </div>
-                      <div className="mt-auto pt-3 text-xs text-[var(--md-slate)]">
+                      <div className="mt-auto pt-4 text-xs text-[var(--md-slate)]">
                         Updated {formatDate(project.updated_at)}
                       </div>
-                    </button>
+                    </div>
                   </div>
                 ))}
               </div>

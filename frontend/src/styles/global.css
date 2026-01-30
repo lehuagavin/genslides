@@ -54,10 +54,9 @@
     line-height: var(--line-height-heading);
   }
 
-  /* 确保所有 grid 布局有足够的间距 */
+  /* 移除全局 grid margin，避免布局对齐问题 */
   .grid {
-    gap: var(--space-6) !important;
-    margin: var(--space-4) !important;
+    gap: var(--space-6);
   }
 
 

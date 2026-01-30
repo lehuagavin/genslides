@@ -16,3 +16,7 @@
 
 顶部引擎切换样式与整体不搭，请优化
 
+
+# issue 6
+
+进入项目时，项目列表的框左右侧，没有和上部的EXISTING PROJECTS，CREATE NEW PROJECT及框对齐，请深度优化样式，使用户体验更好
