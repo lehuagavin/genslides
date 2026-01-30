@@ -149,6 +149,7 @@ INSTRUCTIONS:
                     prompt=prompt,
                     size="2560x1440",  # 16:9 aspect ratio, min 3686400 pixels required
                     response_format="b64_json",  # Request base64 encoded response
+                    watermark=False,  # Disable watermark
                 )
 
                 # Extract image from response
@@ -204,6 +205,7 @@ INSTRUCTIONS:
                     image=reference_image,  # Data URL or HTTP URL
                     size="2560x1440",  # 16:9 aspect ratio, min 3686400 pixels required
                     response_format="b64_json",  # Request base64 encoded response
+                    watermark=False,  # Disable watermark
                 )
 
                 # Extract image from response
