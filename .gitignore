@@ -47,3 +47,7 @@ backend/slides/
 # Lock files (optional - keep if you want reproducible builds)
 # backend/uv.lock
 # frontend/package-lock.json
+
+# Docker
+docker-compose.override.yml
+.dockerignore.local

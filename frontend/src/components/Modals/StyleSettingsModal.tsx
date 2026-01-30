@@ -14,7 +14,7 @@ interface StyleSettingsModalProps {
 }
 
 export function StyleSettingsModal({
-  slug,
+  slug: _slug,
   onGenerateCandidates,
   onSaveStyle,
 }: StyleSettingsModalProps): JSX.Element {

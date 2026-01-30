@@ -4,7 +4,7 @@
 
 import { useCallback } from "react";
 import { styleApi } from "@/api";
-import { useStyleStore, useUIStore, useSlidesStore } from "@/stores";
+import { useStyleStore, useUIStore } from "@/stores";
 import { logger } from "@/utils";
 
 export function useStyle(slug: string) {

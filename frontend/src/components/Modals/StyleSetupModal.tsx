@@ -14,7 +14,7 @@ interface StyleSetupModalProps {
 }
 
 export function StyleSetupModal({
-  slug,
+  slug: _slug,
   onGenerateCandidates,
   onSaveStyle,
 }: StyleSetupModalProps): JSX.Element {

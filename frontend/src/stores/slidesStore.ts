@@ -174,13 +174,16 @@ export const useSlidesStore = create<SlidesState>((set) => ({
           // Update current_image if it was the deleted one
           let newCurrentImage = s.current_image;
           if (s.current_image?.hash === imageHash) {
-            newCurrentImage = newImages.length > 0 ? newImages[newImages.length - 1] : null;
+            newCurrentImage = newImages.length > 0 ? (newImages[newImages.length - 1] ?? null) : null;
           }
 
           // Update displayed image if it was the deleted one
           if (state.displayedImageHash[sid] === imageHash) {
             if (newImages.length > 0) {
-              newDisplayedImageHash[sid] = newImages[newImages.length - 1].hash;
+              const lastImage = newImages[newImages.length - 1];
+              if (lastImage) {
+                newDisplayedImageHash[sid] = lastImage.hash;
+              }
             } else {
               delete newDisplayedImageHash[sid];
             }

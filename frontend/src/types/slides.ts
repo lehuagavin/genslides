@@ -2,6 +2,8 @@
  * Slide-related type definitions
  */
 
+import type { Style } from "./style";
+
 export interface SlideImage {
   hash: string;
   url: string;

@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: genslides-backend
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      # Server configuration
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=3003
+      - SLIDES_BASE_PATH=/app/slides
+      # API Keys from .env file
+      - ARK_API_KEY=${ARK_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # CORS - allow frontend origin
+      - CORS_ORIGINS=http://localhost,http://localhost:80,http://frontend
+    volumes:
+      # Persist slides data
+      - ./slides:/app/slides
+      # Development: mount source code (comment out for production)
+      # - ./backend/app:/app/app
+    networks:
+      - genslides-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:3003/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: genslides-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - genslides-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  genslides-network:
+    driver: bridge
+
+volumes:
+  slides-data:

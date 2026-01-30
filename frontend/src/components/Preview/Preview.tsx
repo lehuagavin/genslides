@@ -113,7 +113,7 @@ export function Preview({ onGenerate, onDeleteImage }: PreviewProps): JSX.Elemen
             currentHash={displayedImage?.hash || null}
             onSelect={handleSelectImage}
             onDelete={handleDeleteImage}
-            needsGeneration={needsGeneration && !isGenerating}
+            needsGeneration={!!(needsGeneration && !isGenerating)}
             isGenerating={isGenerating}
             onGenerate={handleGenerate}
             disabled={!style}

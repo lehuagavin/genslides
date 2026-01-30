@@ -15,5 +15,11 @@ Gen slide 介绍
 5.后端技术栈
 
 
+# 生成图片风格2
 
 使用钢笔淡彩风格，手绘插画，信息图表，色彩清新（蓝色、绿色、砖红色为主），细节丰富，可爱且具有教育意义，主要角色是一只可爱的小狗
+
+# deploy
+
+新增支持docker compose部署。
+新增Makefile，支持make deploy：重新编译并部署；make build：重新编译；make restart 重启；make logs查看日志；每个命令支持可选的SERVICE=frontend|backend，对单个服务进行操作；make status查看所有服务状态；make help

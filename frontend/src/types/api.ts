@@ -25,7 +25,8 @@ export type WSMessageType =
   | "generation_completed"
   | "generation_failed"
   | "style_generation_completed"
-  | "cost_updated";
+  | "cost_updated"
+  | "sync_generating_tasks";
 
 export interface WSMessage<T = unknown> {
   type: WSMessageType;
