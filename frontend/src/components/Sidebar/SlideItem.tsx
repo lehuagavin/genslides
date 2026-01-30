@@ -72,7 +72,7 @@ export function SlideItem({
     <>
       <div
         className={cn(
-          "group relative cursor-pointer border-2 border-[var(--md-graphite)] p-1.5 transition-all",
+          "group relative cursor-pointer border-2 border-[var(--md-graphite)] px-1.5 pt-1.5 pb-0 transition-all",
           "hover:translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[-3px_3px_0_0_rgba(0,0,0,1)]",
           isSelected
             ? "bg-[var(--md-sunbeam)]"
@@ -134,7 +134,7 @@ export function SlideItem({
         </div>
 
         {/* Thumbnail - shows currently displayed image */}
-        <div className="relative mb-0.5 aspect-video w-full overflow-hidden border border-[var(--md-graphite)] bg-[var(--md-fog)]">
+        <div className="relative mb-1 aspect-video w-full overflow-hidden border border-[var(--md-graphite)] bg-[var(--md-fog)]">
           {displayedImage ? (
             <img
               src={displayedImage.thumbnail_url || displayedImage.url}
@@ -171,17 +171,17 @@ export function SlideItem({
         </div>
 
         {/* Content preview with page number */}
-        <div className="flex items-center justify-between gap-2 leading-tight">
+        <div className="flex items-baseline justify-between gap-2 -mb-2">
           <p
             className={cn(
-              "text-xs truncate flex-1 leading-tight",
+              "text-xs truncate flex-1 leading-none",
               isSelected ? "text-[var(--md-ink)]" : "text-[var(--md-slate)]",
               !slide.content && "italic"
             )}
           >
             {slide.content || "Double-click to edit..."}
           </p>
-          <span className="text-xs font-bold text-[var(--md-slate)] flex-shrink-0 leading-tight">
+          <span className="text-xs font-bold text-[var(--md-slate)] flex-shrink-0 leading-none">
             {index + 1}
           </span>
         </div>

@@ -30,7 +30,7 @@ export function ThumbnailList({
   const showGenerateButton = needsGeneration || isGenerating || images.length === 0;
 
   return (
-    <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-[var(--md-graphite)] bg-[var(--md-cloud)] p-2 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
+    <div className="flex items-center justify-center gap-2 rounded-lg border-2 border-[var(--md-graphite)] bg-[var(--md-cloud)] px-2 py-1.5 shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
       {/* Existing image thumbnails */}
       {images.map((image, index) => (
         <div key={image.hash} className="group relative">
