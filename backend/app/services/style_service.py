@@ -3,9 +3,11 @@
 from datetime import datetime
 
 from app.exceptions import InvalidRequestError
-from app.models import Style, StyleCandidate
+from app.models import Project, Style, StyleCandidate
 from app.repositories import SlidesRepository, StyleRepository
 from app.services.gemini_service import GeminiService
+from app.services.image_generation_service import ImageGenerationService
+from app.services.volcengine_service import VolcEngineService
 
 
 class StyleService:
@@ -16,10 +18,18 @@ class StyleService:
         slides_repository: SlidesRepository,
         style_repository: StyleRepository,
         gemini_service: GeminiService,
+        volcengine_service: VolcEngineService,
     ):
         self.slides_repository = slides_repository
         self.style_repository = style_repository
         self.gemini_service = gemini_service
+        self.volcengine_service = volcengine_service
+
+    def _get_engine(self, project: Project) -> ImageGenerationService:
+        """Select image generation engine based on project configuration."""
+        if project.image_engine == "gemini":
+            return self.gemini_service
+        return self.volcengine_service  # Default to VolcEngine
 
     async def get_style(self, slug: str) -> Style | None:
         """Get the current style for a project."""
@@ -31,8 +41,11 @@ class StyleService:
         # Ensure project exists
         project = await self.slides_repository.get_or_create_project(slug)
 
-        # Generate images using Gemini
-        images = await self.gemini_service.generate_style_images(prompt, count=2)
+        # Select image generation engine based on project configuration
+        engine = self._get_engine(project)
+
+        # Generate images using selected engine
+        images = await engine.generate_style_images(prompt, count=2)
 
         # Save candidates
         candidates = []

@@ -1,10 +1,10 @@
 # GenSlides
 
-AI-powered presentation slide generator using Google Gemini for image generation.
+AI-powered presentation slide generator with support for multiple image generation engines.
 
 ## Features
 
-- **AI Image Generation**: Generate slide images from text content using Gemini
+- **AI Image Generation**: Generate slide images from text content using VolcEngine or Google Gemini
 - **Style System**: Define a visual style once, apply it consistently across all slides
 - **Real-time Updates**: WebSocket-based live updates for generation progress
 - **Cost Tracking**: Track API usage and estimated costs
@@ -15,7 +15,7 @@ AI-powered presentation slide generator using Google Gemini for image generation
 ### Backend
 - **Python 3.12+** with FastAPI
 - **uv** for dependency management
-- **Google Gemini** for image generation
+- **VolcEngine Ark API** (default) or **Google Gemini** for image generation
 - **YAML** for data storage
 - **WebSocket** for real-time updates
 
@@ -31,7 +31,7 @@ AI-powered presentation slide generator using Google Gemini for image generation
 
 - Python 3.12+
 - Node.js 20+
-- Google Gemini API key
+- VolcEngine Ark API key (recommended) or Google Gemini API key
 
 ### Backend Setup
 
@@ -44,7 +44,9 @@ uv sync --all-extras
 # Copy environment config
 cp ../.env.example ../.env
 
-# Edit .env and add your GEMINI_API_KEY
+# Edit .env and add your API key:
+# - ARK_API_KEY for VolcEngine (default engine)
+# - GEMINI_API_KEY for Google Gemini (optional)
 
 # Run development server
 uv run uvicorn app.main:app --reload --port 3003

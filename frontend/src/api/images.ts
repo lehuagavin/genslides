@@ -21,6 +21,19 @@ export interface DeleteImageResponse {
   deleted_hash: string;
 }
 
+export interface UpdateEngineRequest {
+  engine: "gemini" | "volcengine";
+}
+
+export interface UpdateEngineResponse {
+  success: boolean;
+  engine: string;
+}
+
+export interface GetEngineResponse {
+  engine: "gemini" | "volcengine";
+}
+
 export const imagesApi = {
   /**
    * Get all images for a slide
@@ -53,5 +66,24 @@ export const imagesApi = {
     return api.delete<DeleteImageResponse>(
       `/slides/${slug}/${sid}/images/${imageHash}`
     );
+  },
+
+  /**
+   * Get current image generation engine
+   */
+  getEngine(slug: string): Promise<GetEngineResponse> {
+    return api.get<GetEngineResponse>(`/slides/${slug}/engine`);
+  },
+
+  /**
+   * Update image generation engine
+   */
+  updateEngine(
+    slug: string,
+    engine: "gemini" | "volcengine"
+  ): Promise<UpdateEngineResponse> {
+    return api.put<UpdateEngineResponse>(`/slides/${slug}/engine`, {
+      engine,
+    });
   },
 };

@@ -7,9 +7,11 @@ from datetime import datetime
 from PIL import Image
 
 from app.exceptions import ImageNotFoundError, SlideNotFoundError, StyleNotSetError
-from app.models import SlideImage
+from app.models import Project, SlideImage
 from app.repositories import ImageRepository, SlidesRepository, StyleRepository
 from app.services.gemini_service import GeminiService
+from app.services.image_generation_service import ImageGenerationService
+from app.services.volcengine_service import VolcEngineService
 from app.utils import compute_content_hash
 
 logger = logging.getLogger(__name__)
@@ -24,11 +26,19 @@ class ImageService:
         style_repository: StyleRepository,
         image_repository: ImageRepository,
         gemini_service: GeminiService,
+        volcengine_service: VolcEngineService,
     ):
         self.slides_repository = slides_repository
         self.style_repository = style_repository
         self.image_repository = image_repository
         self.gemini_service = gemini_service
+        self.volcengine_service = volcengine_service
+
+    def _get_engine(self, project: Project) -> ImageGenerationService:
+        """Select image generation engine based on project configuration."""
+        if project.image_engine == "gemini":
+            return self.gemini_service
+        return self.volcengine_service  # Default to VolcEngine
 
     async def get_images(self, slug: str, sid: str) -> list[SlideImage]:
         """Get all images for a slide."""
@@ -76,9 +86,15 @@ class ImageService:
         if style_image is None:
             raise StyleNotSetError()
 
+        # Select image generation engine based on project configuration
+        engine = self._get_engine(project)
+
         # Generate new image (this is the slow part)
-        logger.info("Generating image", extra={"slug": slug, "sid": sid})
-        image_data = await self.gemini_service.generate_slide_image(
+        logger.info(
+            f"Generating image using {project.image_engine}",
+            extra={"slug": slug, "sid": sid, "engine": project.image_engine},
+        )
+        image_data = await engine.generate_slide_image(
             content=slide.content,
             style_image=style_image,
             style_prompt=project.style.prompt,

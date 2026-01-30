@@ -29,6 +29,18 @@ class GeminiService:
     def __init__(self, api_key: str):
         self.api_key = api_key
 
+    def _check_availability(self) -> None:
+        """Check if the service is properly configured.
+
+        Raises:
+            RuntimeError: If API key is not configured
+        """
+        if not self.api_key:
+            raise RuntimeError(
+                "Gemini API key not configured. "
+                "Please set GEMINI_API_KEY environment variable."
+            )
+
     def _create_client(self) -> "genai.Client":
         """Create a new Gemini client (thread-safe for use in executor)."""
         from google import genai
@@ -53,6 +65,9 @@ class GeminiService:
         Returns:
             List of image bytes in JPEG format
         """
+        # Check if service is available before making API calls
+        self._check_availability()
+
         full_prompt = f"""
 Generate a presentation slide background image with the following style:
 {prompt}
@@ -100,6 +115,9 @@ Requirements:
         Returns:
             Generated image bytes in JPEG format
         """
+        # Check if service is available before making API calls
+        self._check_availability()
+
         # Load style reference image
         style_pil = Image.open(io.BytesIO(style_image))
 

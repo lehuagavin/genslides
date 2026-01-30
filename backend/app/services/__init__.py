@@ -5,6 +5,7 @@ from .gemini_service import GeminiService
 from .image_service import ImageService
 from .slides_service import SlidesService
 from .style_service import StyleService
+from .volcengine_service import VolcEngineService
 
 __all__ = [
     "CostService",
@@ -12,4 +13,5 @@ __all__ = [
     "ImageService",
     "SlidesService",
     "StyleService",
+    "VolcEngineService",
 ]

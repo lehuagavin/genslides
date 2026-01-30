@@ -124,3 +124,22 @@ class ProjectListResponse(BaseModel):
     """Response schema for project list."""
 
     projects: list[ProjectSummaryResponse]
+
+
+class UpdateEngineRequest(BaseModel):
+    """Request schema for updating image generation engine."""
+
+    engine: str = Field(..., pattern="^(gemini|volcengine)$")
+
+
+class UpdateEngineResponse(BaseModel):
+    """Response schema for engine update."""
+
+    success: bool
+    engine: str
+
+
+class GetEngineResponse(BaseModel):
+    """Response schema for getting current engine."""
+
+    engine: str

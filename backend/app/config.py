@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     # Gemini API
     gemini_api_key: str = ""
 
+    # VolcEngine Ark API
+    ark_api_key: str = ""
+
     # Storage
     slides_base_path: str = "./slides"
 

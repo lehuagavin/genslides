@@ -7,6 +7,7 @@ import { TitleInput } from "./TitleInput";
 import { StyleBadge } from "./StyleBadge";
 import { CostDisplay } from "./CostDisplay";
 import { PlayButton } from "./PlayButton";
+import { EngineSelector } from "./EngineSelector";
 import { useSlidesStore, useStyleStore, usePlayerStore } from "@/stores";
 
 interface HeaderProps {
@@ -55,6 +56,7 @@ export function Header({ onTitleChange, onBackToHome }: HeaderProps): JSX.Elemen
       </div>
 
       <div className="flex items-center gap-4">
+        <EngineSelector />
         <StyleBadge style={style} onClick={handleStyleClick} />
         <PlayButton onClick={handlePlay} disabled={!canPlay} />
       </div>

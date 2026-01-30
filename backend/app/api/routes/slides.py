@@ -11,6 +11,7 @@ from app.api.schemas import (
     CreateSlideRequest,
     DeleteProjectResponse,
     DeleteSlideResponse,
+    GetEngineResponse,
     ProjectListResponse,
     ProjectResponse,
     ProjectSummaryResponse,
@@ -19,6 +20,8 @@ from app.api.schemas import (
     SlideImageResponse,
     SlideResponse,
     StyleResponse,
+    UpdateEngineRequest,
+    UpdateEngineResponse,
     UpdateSlideRequest,
     UpdateTitleRequest,
     UpdateTitleResponse,
@@ -205,4 +208,39 @@ async def get_cost(
         slide_generations=project.cost.slide_generations,
         estimated_cost=project.cost.estimated_cost,
         breakdown=cost_service.get_breakdown(project.cost),
+    )
+
+
+@router.get("/{slug}/engine", response_model=GetEngineResponse)
+async def get_image_engine(
+    slug: str,
+    service: Annotated[SlidesService, Depends(get_slides_service)],
+) -> GetEngineResponse:
+    """Get the current image generation engine for a project."""
+    project = await service.get_project(slug)
+    return GetEngineResponse(engine=project.image_engine)
+
+
+@router.put("/{slug}/engine", response_model=UpdateEngineResponse)
+async def update_image_engine(
+    slug: str,
+    request: UpdateEngineRequest,
+    service: Annotated[SlidesService, Depends(get_slides_service)],
+) -> UpdateEngineResponse:
+    """Update the image generation engine for a project."""
+    from app.exceptions import InvalidRequestError
+
+    if request.engine not in ["gemini", "volcengine"]:
+        raise InvalidRequestError("Engine must be 'gemini' or 'volcengine'")
+
+    project = await service.update_engine(slug, request.engine)
+
+    logger.info(
+        f"Updated image engine to {request.engine}",
+        extra={"slug": slug, "engine": request.engine},
+    )
+
+    return UpdateEngineResponse(
+        success=True,
+        engine=project.image_engine,
     )

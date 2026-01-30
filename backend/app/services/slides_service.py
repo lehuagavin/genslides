@@ -41,6 +41,14 @@ class SlidesService:
         await self.repository.save_project(project)
         return project
 
+    async def update_engine(self, slug: str, engine: str) -> Project:
+        """Update project image generation engine."""
+        project = await self.get_project(slug)
+        project.image_engine = engine
+        project.updated_at = datetime.now()
+        await self.repository.save_project(project)
+        return project
+
     async def create_slide(self, slug: str, content: str, after_sid: str | None = None) -> Slide:
         """Create a new slide."""
         project = await self.get_project(slug)

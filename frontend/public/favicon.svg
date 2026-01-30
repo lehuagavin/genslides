@@ -1,0 +1,9 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background slide (back) -->
+  <rect x="6" y="8" width="20" height="14" rx="1" fill="#7DD3FC" stroke="#1F2937" stroke-width="2"/>
+  <!-- Foreground slide (front) with offset -->
+  <rect x="8" y="10" width="20" height="14" rx="1" fill="#FCD34D" stroke="#1F2937" stroke-width="2"/>
+  <!-- Content lines on front slide -->
+  <line x1="12" y1="14" x2="24" y2="14" stroke="#1F2937" stroke-width="2" stroke-linecap="round"/>
+  <line x1="12" y1="18" x2="20" y2="18" stroke="#1F2937" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

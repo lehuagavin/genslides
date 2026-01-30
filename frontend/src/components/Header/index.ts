@@ -8,3 +8,4 @@ export { TitleInput } from "./TitleInput";
 export { StyleBadge } from "./StyleBadge";
 export { CostDisplay } from "./CostDisplay";
 export { PlayButton } from "./PlayButton";
+export { EngineSelector } from "./EngineSelector";

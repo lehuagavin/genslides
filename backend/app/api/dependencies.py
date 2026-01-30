@@ -10,6 +10,7 @@ from app.services import (
     ImageService,
     SlidesService,
     StyleService,
+    VolcEngineService,
 )
 
 
@@ -34,11 +35,16 @@ def get_image_repository() -> ImageRepository:
     return ImageRepository(settings.slides_base_path)
 
 
-@lru_cache
 def get_gemini_service() -> GeminiService:
-    """Get Gemini service instance."""
+    """Get Gemini service instance (lazy-loaded)."""
     settings = get_settings()
     return GeminiService(settings.gemini_api_key)
+
+
+def get_volcengine_service() -> VolcEngineService:
+    """Get VolcEngine service instance (lazy-loaded)."""
+    settings = get_settings()
+    return VolcEngineService(settings.ark_api_key)
 
 
 @lru_cache
@@ -59,6 +65,7 @@ def get_style_service() -> StyleService:
         slides_repository=get_slides_repository(),
         style_repository=get_style_repository(),
         gemini_service=get_gemini_service(),
+        volcengine_service=get_volcengine_service(),
     )
 
 
@@ -69,4 +76,5 @@ def get_image_service() -> ImageService:
         style_repository=get_style_repository(),
         image_repository=get_image_repository(),
         gemini_service=get_gemini_service(),
+        volcengine_service=get_volcengine_service(),
     )

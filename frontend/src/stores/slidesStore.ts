@@ -15,6 +15,7 @@ interface SlidesState {
   error: string | null;
   cost: CostInfo | null;
   displayedImageHash: Record<string, string>; // sid -> displayed image hash
+  imageEngine: "gemini" | "volcengine"; // Image generation engine
 
   // Actions
   setSlug: (slug: string) => void;
@@ -31,6 +32,7 @@ interface SlidesState {
   setCost: (cost: CostInfo) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
+  setImageEngine: (engine: "gemini" | "volcengine") => void;
   reset: () => void;
 }
 
@@ -62,6 +64,7 @@ const initialState = {
   error: null,
   cost: null,
   displayedImageHash: loadDisplayedImageHash(),
+  imageEngine: "gemini" as const,
 };
 
 export const useSlidesStore = create<SlidesState>((set) => ({
@@ -222,6 +225,8 @@ export const useSlidesStore = create<SlidesState>((set) => ({
   setLoading: (isLoading) => set({ isLoading }),
 
   setError: (error) => set({ error }),
+
+  setImageEngine: (engine) => set({ imageEngine: engine }),
 
   reset: () => set(initialState),
 }));
