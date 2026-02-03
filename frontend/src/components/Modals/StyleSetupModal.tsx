@@ -106,10 +106,10 @@ export function StyleSetupModal({
           <select
             value={selectedTemplate?.type || ""}
             onChange={(e) => handleTemplateChange(e.target.value)}
-            className="w-full rounded border border-[var(--md-graphite)] bg-[var(--md-ink)] px-3 py-2 text-[var(--md-paper)] focus:border-[var(--md-sky)] focus:outline-none"
+            className="w-full rounded border border-[var(--md-graphite)] bg-white px-3 py-2 text-gray-900 focus:border-[var(--md-sky)] focus:outline-none"
           >
             {templates.map((template: StyleTemplate) => (
-              <option key={template.type} value={template.type}>
+              <option key={template.type} value={template.type} className="bg-white text-gray-900">
                 🎨 {template.name} ({template.name_en})
               </option>
             ))}

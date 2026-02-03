@@ -62,12 +62,26 @@ export const useStyleStore = create<StyleState>((set, get) => ({
 
   setPromptInput: (promptInput) => set({ promptInput }),
 
-  openSetupModal: () => set({ showSetupModal: true }),
+  openSetupModal: () => {
+    set({ showSetupModal: true });
+    // 打开 modal 时立即加载模板
+    const { templates, isLoadingTemplates } = get();
+    if (templates.length === 0 && !isLoadingTemplates) {
+      get().loadTemplates();
+    }
+  },
 
   closeSetupModal: () =>
     set({ showSetupModal: false, candidates: [], promptInput: "", selectedTemplate: null }),
 
-  openSettingsModal: () => set({ showSettingsModal: true }),
+  openSettingsModal: () => {
+    set({ showSettingsModal: true });
+    // 打开 modal 时立即加载模板
+    const { templates, isLoadingTemplates } = get();
+    if (templates.length === 0 && !isLoadingTemplates) {
+      get().loadTemplates();
+    }
+  },
 
   closeSettingsModal: () =>
     set({ showSettingsModal: false, candidates: [], promptInput: "", selectedTemplate: null }),
