@@ -22,7 +22,7 @@ class GetStyleResponse(BaseModel):
 class GenerateStyleRequest(BaseModel):
     """Request schema for generating style candidates."""
 
-    prompt: str = Field(..., min_length=1, max_length=1000)
+    prompt: str = Field(..., min_length=1, max_length=5000)
 
 
 class GenerateStyleResponse(BaseModel):
@@ -35,7 +35,7 @@ class GenerateStyleResponse(BaseModel):
 class SaveStyleRequest(BaseModel):
     """Request schema for saving a style."""
 
-    prompt: str = Field(..., min_length=1, max_length=1000)
+    prompt: str = Field(..., min_length=1, max_length=5000)
     candidate_id: str
 
 
