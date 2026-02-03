@@ -2,15 +2,16 @@
  * Initial style setup modal
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Textarea, Loading } from "@/components/common";
 import { useStyleStore } from "@/stores";
 import { cn } from "@/utils";
+import type { StyleType, StyleTemplate } from "@/types";
 
 interface StyleSetupModalProps {
   slug: string;
   onGenerateCandidates: (prompt: string) => Promise<void>;
-  onSaveStyle: (candidateId: string) => Promise<void>;
+  onSaveStyle: (candidateId: string, styleType?: StyleType | string, styleName?: string) => Promise<void>;
 }
 
 export function StyleSetupModal({
@@ -25,10 +26,38 @@ export function StyleSetupModal({
     promptInput,
     setPromptInput,
     closeSetupModal,
+    // 风格模板相关
+    templates,
+    selectedTemplate,
+    isLoadingTemplates,
+    loadTemplates,
+    selectTemplate,
   } = useStyleStore();
 
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // 加载风格模板
+  useEffect(() => {
+    if (showSetupModal && templates.length === 0) {
+      loadTemplates();
+    }
+  }, [showSetupModal, templates.length, loadTemplates]);
+
+  // 当模板加载完成后，自动选择第一个模板
+  useEffect(() => {
+    const firstTemplate = templates[0];
+    if (firstTemplate && !selectedTemplate && showSetupModal) {
+      selectTemplate(firstTemplate);
+    }
+  }, [templates, selectedTemplate, showSetupModal, selectTemplate]);
+
+  const handleTemplateChange = (templateType: string) => {
+    const template = templates.find((t) => t.type === templateType);
+    selectTemplate(template || null);
+    // 清除之前的候选图片
+    setSelectedCandidate(null);
+  };
 
   const handleGenerate = async () => {
     if (promptInput.trim()) {
@@ -41,7 +70,11 @@ export function StyleSetupModal({
     if (selectedCandidate) {
       setIsSaving(true);
       try {
-        await onSaveStyle(selectedCandidate);
+        await onSaveStyle(
+          selectedCandidate,
+          selectedTemplate?.type,
+          selectedTemplate?.name
+        );
       } finally {
         setIsSaving(false);
       }
@@ -52,40 +85,66 @@ export function StyleSetupModal({
     <Modal
       isOpen={showSetupModal}
       onClose={closeSetupModal}
-      title="Set Presentation Style"
+      title="设置项目风格"
       className="max-w-2xl"
       showCloseButton={false}
     >
       <p className="mb-4 text-[var(--md-slate)]">
-        Describe the visual style you want for your slides. We'll generate preview images
-        for you to choose from.
+        选择一个预设风格模板或自定义风格描述，然后生成风格参考图片。
       </p>
 
-      {/* Prompt input */}
+      {/* 风格模板选择器 */}
+      <div className="mb-4">
+        <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
+          选择风格模板
+        </label>
+        {isLoadingTemplates ? (
+          <div className="py-2">
+            <Loading size="sm" text="加载模板中..." />
+          </div>
+        ) : (
+          <select
+            value={selectedTemplate?.type || ""}
+            onChange={(e) => handleTemplateChange(e.target.value)}
+            className="w-full rounded border border-[var(--md-graphite)] bg-[var(--md-ink)] px-3 py-2 text-[var(--md-paper)] focus:border-[var(--md-sky)] focus:outline-none"
+          >
+            {templates.map((template: StyleTemplate) => (
+              <option key={template.type} value={template.type}>
+                🎨 {template.name} ({template.name_en})
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {/* 风格描述编辑器 */}
       <div className="mb-6">
         <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
-          Style Description
+          风格描述
         </label>
         <Textarea
           value={promptInput}
           onChange={(e) => setPromptInput(e.target.value)}
-          placeholder="e.g., Modern minimalist with blue gradient background, clean typography, professional business style"
-          className="h-24"
+          placeholder="请选择风格模板或输入自定义描述..."
+          className="h-40"
         />
+        <p className="mt-1 text-xs text-[var(--md-slate)]">
+          您可以修改风格描述来自定义生成效果
+        </p>
         <Button
           onClick={handleGenerate}
           disabled={!promptInput.trim() || isGenerating}
           isLoading={isGenerating}
           className="mt-3"
         >
-          Generate Styles
+          生成风格图片
         </Button>
       </div>
 
       {/* Loading state */}
       {isGenerating && (
         <div className="py-8">
-          <Loading size="lg" text="Generating style previews..." />
+          <Loading size="lg" text="正在生成风格预览..." />
         </div>
       )}
 
@@ -93,7 +152,7 @@ export function StyleSetupModal({
       {candidates.length > 0 && !isGenerating && (
         <div className="mb-6">
           <label className="mb-3 block text-sm font-bold uppercase tracking-wider">
-            Choose a Style
+            选择一张图片作为项目风格参考
           </label>
           <div className="grid grid-cols-2 gap-4">
             {candidates.map((candidate) => (
@@ -140,14 +199,14 @@ export function StyleSetupModal({
       {candidates.length > 0 && !isGenerating && (
         <div className="flex justify-end gap-3">
           <Button variant="secondary" onClick={handleGenerate}>
-            Regenerate
+            重新生成
           </Button>
           <Button
             onClick={handleSave}
             disabled={!selectedCandidate || isSaving}
             isLoading={isSaving}
           >
-            Use This Style
+            使用此风格
           </Button>
         </div>
       )}

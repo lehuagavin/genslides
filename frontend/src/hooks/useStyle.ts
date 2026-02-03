@@ -54,24 +54,24 @@ export function useStyle(slug: string) {
 
   // Save selected style
   const saveStyle = useCallback(
-    async (candidateId: string) => {
+    async (candidateId: string, styleType?: string, styleName?: string) => {
       // Get latest promptInput from store to avoid stale closure
       const currentPrompt = useStyleStore.getState().promptInput;
-      logger.info("Saving style with:", { slug, promptInput: currentPrompt, candidateId });
+      logger.info("Saving style with:", { slug, promptInput: currentPrompt, candidateId, styleType, styleName });
       try {
-        const response = await styleApi.saveStyle(slug, currentPrompt, candidateId);
+        const response = await styleApi.saveStyle(slug, currentPrompt, candidateId, styleType, styleName);
         setStyle(response.style);
         closeSetupModal();
         closeSettingsModal();
         addToast({
           type: "success",
-          message: "Style saved successfully",
+          message: "风格保存成功",
         });
         logger.info("Style saved:", response.style);
       } catch (err) {
         addToast({
           type: "error",
-          message: "Failed to save style",
+          message: "保存风格失败",
         });
         logger.error("Failed to save style:", err);
       }

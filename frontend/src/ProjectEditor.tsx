@@ -91,8 +91,8 @@ export function ProjectEditor({
   );
 
   const handleSaveStyle = useCallback(
-    async (candidateId: string) => {
-      await saveStyle(candidateId);
+    async (candidateId: string, styleType?: string, styleName?: string) => {
+      await saveStyle(candidateId, styleType, styleName);
     },
     [saveStyle]
   );

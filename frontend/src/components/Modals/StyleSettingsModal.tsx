@@ -2,15 +2,16 @@
  * Style settings modal for changing existing style
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Textarea, Loading } from "@/components/common";
 import { useStyleStore } from "@/stores";
 import { cn } from "@/utils";
+import type { StyleType, StyleTemplate } from "@/types";
 
 interface StyleSettingsModalProps {
   slug: string;
   onGenerateCandidates: (prompt: string) => Promise<void>;
-  onSaveStyle: (candidateId: string) => Promise<void>;
+  onSaveStyle: (candidateId: string, styleType?: StyleType | string, styleName?: string) => Promise<void>;
 }
 
 export function StyleSettingsModal({
@@ -26,10 +27,30 @@ export function StyleSettingsModal({
     promptInput,
     setPromptInput,
     closeSettingsModal,
+    // 风格模板相关
+    templates,
+    selectedTemplate,
+    isLoadingTemplates,
+    loadTemplates,
+    selectTemplate,
   } = useStyleStore();
 
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  // 加载风格模板
+  useEffect(() => {
+    if (showSettingsModal && templates.length === 0) {
+      loadTemplates();
+    }
+  }, [showSettingsModal, templates.length, loadTemplates]);
+
+  const handleTemplateChange = (templateType: string) => {
+    const template = templates.find((t) => t.type === templateType);
+    selectTemplate(template || null);
+    // 清除之前的候选图片
+    setSelectedCandidate(null);
+  };
 
   const handleGenerate = async () => {
     if (promptInput.trim()) {
@@ -42,7 +63,11 @@ export function StyleSettingsModal({
     if (selectedCandidate) {
       setIsSaving(true);
       try {
-        await onSaveStyle(selectedCandidate);
+        await onSaveStyle(
+          selectedCandidate,
+          selectedTemplate?.type,
+          selectedTemplate?.name
+        );
       } finally {
         setIsSaving(false);
       }
@@ -53,14 +78,19 @@ export function StyleSettingsModal({
     <Modal
       isOpen={showSettingsModal}
       onClose={closeSettingsModal}
-      title="Style Settings"
+      title="风格设置"
       className="max-w-2xl"
     >
       {/* Current style */}
       {style && (
         <div className="mb-6">
           <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
-            Current Style
+            当前风格
+            {style.style_name && (
+              <span className="ml-2 text-xs font-normal text-[var(--md-slate)]">
+                ({style.style_name})
+              </span>
+            )}
           </label>
           <div className="flex gap-4">
             <div className="h-24 w-40 overflow-hidden border-2 border-[var(--md-graphite)]">
@@ -71,22 +101,47 @@ export function StyleSettingsModal({
               />
             </div>
             <div className="flex-1">
-              <p className="text-sm text-[var(--md-ink)]">{style.prompt}</p>
+              <p className="text-sm text-[var(--md-ink)] line-clamp-4">{style.prompt}</p>
             </div>
           </div>
         </div>
       )}
 
+      {/* 风格模板选择器 */}
+      <div className="mb-4">
+        <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
+          选择风格模板
+        </label>
+        {isLoadingTemplates ? (
+          <div className="py-2">
+            <Loading size="sm" text="加载模板中..." />
+          </div>
+        ) : (
+          <select
+            value={selectedTemplate?.type || ""}
+            onChange={(e) => handleTemplateChange(e.target.value)}
+            className="w-full rounded border border-[var(--md-graphite)] bg-[var(--md-ink)] px-3 py-2 text-[var(--md-paper)] focus:border-[var(--md-sky)] focus:outline-none"
+          >
+            <option value="">-- 选择模板 --</option>
+            {templates.map((template: StyleTemplate) => (
+              <option key={template.type} value={template.type}>
+                🎨 {template.name} ({template.name_en})
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
       {/* New style input */}
       <div className="mb-6">
         <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
-          Change Style
+          风格描述
         </label>
         <Textarea
           value={promptInput}
           onChange={(e) => setPromptInput(e.target.value)}
-          placeholder="Describe a new style..."
-          className="h-24"
+          placeholder="选择模板或输入自定义风格描述..."
+          className="h-32"
         />
         <Button
           onClick={handleGenerate}
@@ -94,14 +149,14 @@ export function StyleSettingsModal({
           isLoading={isGenerating}
           className="mt-3"
         >
-          Generate New Styles
+          生成新风格
         </Button>
       </div>
 
       {/* Loading state */}
       {isGenerating && (
         <div className="py-8">
-          <Loading size="lg" text="Generating style previews..." />
+          <Loading size="lg" text="正在生成风格预览..." />
         </div>
       )}
 
@@ -109,7 +164,7 @@ export function StyleSettingsModal({
       {candidates.length > 0 && !isGenerating && (
         <div className="mb-6">
           <label className="mb-3 block text-sm font-bold uppercase tracking-wider">
-            Choose a New Style
+            选择新风格
           </label>
           <div className="grid grid-cols-2 gap-4">
             {candidates.map((candidate) => (
@@ -152,14 +207,14 @@ export function StyleSettingsModal({
 
           <div className="mt-4 flex justify-end gap-3">
             <Button variant="secondary" onClick={handleGenerate}>
-              Regenerate
+              重新生成
             </Button>
             <Button
               onClick={handleSave}
               disabled={!selectedCandidate || isSaving}
               isLoading={isSaving}
             >
-              Use This Style
+              使用此风格
             </Button>
           </div>
         </div>
