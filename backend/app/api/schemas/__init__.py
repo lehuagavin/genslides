@@ -22,12 +22,16 @@ from .slides import (
     UpdateTitleResponse,
 )
 from .style import (
+    GenerateStyleFromTemplateRequest,
+    GenerateStyleFromTemplateResponse,
     GenerateStyleRequest,
     GenerateStyleResponse,
     GetStyleResponse,
     SaveStyleRequest,
     SaveStyleResponse,
     StyleCandidateResponse,
+    StyleTemplateResponse,
+    StyleTemplatesResponse,
 )
 
 __all__ = [
@@ -51,12 +55,16 @@ __all__ = [
     "UpdateTitleRequest",
     "UpdateTitleResponse",
     # Style
+    "GenerateStyleFromTemplateRequest",
+    "GenerateStyleFromTemplateResponse",
     "GenerateStyleRequest",
     "GenerateStyleResponse",
     "GetStyleResponse",
     "SaveStyleRequest",
     "SaveStyleResponse",
     "StyleCandidateResponse",
+    "StyleTemplateResponse",
+    "StyleTemplatesResponse",
     # Images
     "DeleteImageResponse",
     "GenerateImageRequest",

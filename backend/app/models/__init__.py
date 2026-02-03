@@ -2,7 +2,7 @@
 
 from .project import CostInfo, Project
 from .slide import Slide, SlideImage
-from .style import Style, StyleCandidate
+from .style import STYLE_TEMPLATES, Style, StyleCandidate, StyleTemplate, StyleType
 
 __all__ = [
     "CostInfo",
@@ -11,4 +11,7 @@ __all__ = [
     "SlideImage",
     "Style",
     "StyleCandidate",
+    "StyleTemplate",
+    "StyleType",
+    "STYLE_TEMPLATES",
 ]

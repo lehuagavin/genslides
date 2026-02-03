@@ -8,7 +8,7 @@ from typing import Any
 
 import yaml
 
-from app.models import CostInfo, Project, Slide, SlideImage, Style
+from app.models import CostInfo, Project, Slide, SlideImage, Style, StyleType
 from app.utils import ensure_directory, file_exists, read_file, write_file
 
 
@@ -120,10 +120,20 @@ class SlidesRepository:
         """Parse project data from YAML."""
         style = None
         if data.get("style"):
+            # 解析 style_type（向后兼容）
+            style_type = None
+            if data["style"].get("style_type"):
+                try:
+                    style_type = StyleType(data["style"]["style_type"])
+                except ValueError:
+                    style_type = None
+
             style = Style(
                 prompt=data["style"]["prompt"],
                 image=data["style"]["image"],
                 created_at=datetime.fromisoformat(data["style"]["created_at"]),
+                style_type=style_type,
+                style_name=data["style"].get("style_name"),
             )
 
         slides = []
@@ -179,11 +189,17 @@ class SlidesRepository:
         }
 
         if project.style:
-            data["style"] = {
+            style_data: dict[str, Any] = {
                 "prompt": project.style.prompt,
                 "image": project.style.image,
                 "created_at": project.style.created_at.isoformat(),
             }
+            # 只有当有值时才保存 style_type 和 style_name
+            if project.style.style_type:
+                style_data["style_type"] = project.style.style_type.value
+            if project.style.style_name:
+                style_data["style_name"] = project.style.style_name
+            data["style"] = style_data
 
         for slide in project.slides:
             slide_data = {

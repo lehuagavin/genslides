@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api import images_router, slides_router, style_router, websocket_router
+from app.api import images_router, slides_router, style_router, style_templates_router, websocket_router
 from app.config import get_settings
 from app.exceptions import AppError
 
@@ -136,6 +136,8 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
 
 
 # Include routers
+# Style templates router is separate (not dependent on slug)
+app.include_router(style_templates_router, prefix="/api")
 # Style router must be before slides router to avoid route conflicts
 # (slides has /{slug}/{sid} which would match /{slug}/style)
 app.include_router(style_router, prefix="/api")

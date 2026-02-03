@@ -3,7 +3,14 @@
 from datetime import datetime
 
 from app.exceptions import InvalidRequestError
-from app.models import Project, Style, StyleCandidate
+from app.models import (
+    STYLE_TEMPLATES,
+    Project,
+    Style,
+    StyleCandidate,
+    StyleTemplate,
+    StyleType,
+)
 from app.repositories import SlidesRepository, StyleRepository
 from app.services.gemini_service import GeminiService
 from app.services.image_generation_service import ImageGenerationService
@@ -30,6 +37,20 @@ class StyleService:
         if project.image_engine == "gemini":
             return self.gemini_service
         return self.volcengine_service  # Default to VolcEngine
+
+    @staticmethod
+    def get_style_templates() -> list[StyleTemplate]:
+        """获取所有预设风格模板"""
+        return list(STYLE_TEMPLATES.values())
+
+    @staticmethod
+    def get_template_by_type(style_type: str) -> StyleTemplate | None:
+        """根据类型获取风格模板"""
+        try:
+            enum_type = StyleType(style_type)
+            return STYLE_TEMPLATES.get(enum_type)
+        except ValueError:
+            return None
 
     async def get_style(self, slug: str) -> Style | None:
         """Get the current style for a project."""
@@ -68,7 +89,43 @@ class StyleService:
 
         return candidates
 
-    async def save_style(self, slug: str, prompt: str, candidate_id: str) -> Style:
+    async def generate_candidates_from_template(
+        self,
+        slug: str,
+        style_type: str,
+        custom_prompt: str | None = None,
+    ) -> tuple[list[StyleCandidate], StyleTemplate]:
+        """
+        基于预设模板生成风格候选
+
+        Args:
+            slug: 项目 slug
+            style_type: 风格类型
+            custom_prompt: 自定义提示词（可选，优先级高于模板默认）
+
+        Returns:
+            (候选列表, 使用的模板)
+        """
+        template = self.get_template_by_type(style_type)
+        if not template:
+            raise InvalidRequestError(f"Unknown style type: {style_type}")
+
+        # 使用自定义提示词或模板的 preview_prompt（用于生成风格参考图）
+        prompt = custom_prompt or template.preview_prompt
+
+        # 调用现有生成逻辑
+        candidates = await self.generate_candidates(slug, prompt)
+
+        return candidates, template
+
+    async def save_style(
+        self,
+        slug: str,
+        prompt: str,
+        candidate_id: str,
+        style_type: str | None = None,
+        style_name: str | None = None,
+    ) -> Style:
         """Save a selected candidate as the project style."""
         project = await self.slides_repository.get_or_create_project(slug)
 
@@ -77,11 +134,21 @@ class StyleService:
         if result is None:
             raise InvalidRequestError(f"Candidate '{candidate_id}' not found")
 
+        # 解析风格类型
+        parsed_style_type: StyleType | None = None
+        if style_type:
+            try:
+                parsed_style_type = StyleType(style_type)
+            except ValueError:
+                parsed_style_type = StyleType.CUSTOM
+
         # Create and save style
         style = Style(
             prompt=prompt,
             image="style/style.jpg",
             created_at=datetime.now(),
+            style_type=parsed_style_type,
+            style_name=style_name,
         )
         project.style = style
         project.updated_at = datetime.now()

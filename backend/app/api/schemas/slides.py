@@ -30,6 +30,8 @@ class StyleResponse(BaseModel):
     prompt: str
     image: str
     created_at: str
+    style_type: str | None = None  # 风格类型（可选）
+    style_name: str | None = None  # 风格名称（可选）
 
 
 class CostResponse(BaseModel):
