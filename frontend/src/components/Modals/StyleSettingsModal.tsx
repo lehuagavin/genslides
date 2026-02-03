@@ -2,7 +2,7 @@
  * Style settings modal for changing existing style
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, Button, Textarea, Loading } from "@/components/common";
 import { useStyleStore } from "@/stores";
 import { cn } from "@/utils";
@@ -31,19 +31,11 @@ export function StyleSettingsModal({
     templates,
     selectedTemplate,
     isLoadingTemplates,
-    loadTemplates,
     selectTemplate,
   } = useStyleStore();
 
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-
-  // 加载风格模板
-  useEffect(() => {
-    if (showSettingsModal && templates.length === 0) {
-      loadTemplates();
-    }
-  }, [showSettingsModal, templates.length, loadTemplates]);
 
   const handleTemplateChange = (templateType: string) => {
     const template = templates.find((t) => t.type === templateType);

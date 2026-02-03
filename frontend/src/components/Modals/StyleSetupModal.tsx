@@ -30,21 +30,13 @@ export function StyleSetupModal({
     templates,
     selectedTemplate,
     isLoadingTemplates,
-    loadTemplates,
     selectTemplate,
   } = useStyleStore();
 
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // 加载风格模板
-  useEffect(() => {
-    if (showSetupModal && templates.length === 0) {
-      loadTemplates();
-    }
-  }, [showSetupModal, templates.length, loadTemplates]);
-
-  // 当模板加载完成后，自动选择第一个模板
+  // 当模板更新后，如果没有选中模板，自动选择第一个
   useEffect(() => {
     const firstTemplate = templates[0];
     if (firstTemplate && !selectedTemplate && showSetupModal) {
