@@ -88,7 +88,93 @@ const DEFAULT_TEMPLATES: StyleTemplate[] = [
 色彩极简：黑灰为主，少量淡赭/淡蓝辅助。`,
     preview_prompt: "traditional Chinese ink wash landscape, ink gradients, minimal colors, lots of negative space, red seal",
   },
+  {
+    type: StyleType.ISOMETRIC,
+    name: "等距·科技构图风",
+    name_en: "Isometric Tech Style",
+    description: `等距视角与清晰网格，模块化结构层层堆叠。
+冷色主导：浅灰底（60%）、蓝青/紫蓝强调（30%）、少量亮橙点缀（10%）。
+阴影轻薄，材质偏扁平，强调信息架构与层级关系。`,
+    preview_prompt: "isometric tech illustration, clean grid, modular blocks, cool blue palette, subtle shadows, modern UI style",
+  },
+  {
+    type: StyleType.BAUHAUS,
+    name: "包豪斯·几何构成风",
+    name_en: "Bauhaus Style",
+    description: `基础几何形状（圆/方/三角）与主色块组合，比例简洁有力。
+原色体系：红/黄/蓝为主，黑白灰为辅，构图强调功能与秩序。
+文字排版与图形块面紧密配合，整体清爽有节奏。`,
+    preview_prompt: "bauhaus design, primary colors, geometric shapes, clean composition, functional typography",
+  },
+  {
+    type: StyleType.RETRO,
+    name: "复古·70s海报风",
+    name_en: "Retro 70s Poster Style",
+    description: `复古粗颗粒与老纸张质感，曲线字体与复古插画元素结合。
+色彩偏暖：焦糖橙/芥末黄/墨绿/奶油白，饱和度中等。
+构图居中，标题醒目，带有怀旧感与复古印刷味道。`,
+    preview_prompt: "retro 1970s poster, warm muted palette, grain texture, vintage typography, nostalgic illustration",
+  },
+  {
+    type: StyleType.BRUTALIST,
+    name: "粗野主义·黑白强对比风",
+    name_en: "Brutalist Black & White",
+    description: `极强黑白对比，粗线条与巨大标题形成视觉压迫感。
+排版自由、不对齐、冲突感强，强调原始与力量。
+局部使用警示红作点缀，增强视觉冲击。`,
+    preview_prompt: "brutalist graphic design, black and white high contrast, bold typography, raw layout, minimal red accents",
+  },
+  {
+    type: StyleType.PASTEL,
+    name: "马卡龙·柔和插画风",
+    name_en: "Pastel Soft Illustration",
+    description: `柔和低饱和色块与圆角元素，整体氛围温暖轻松。
+配色以浅粉/淡紫/薄荷绿/奶油黄为主，渐变过渡柔滑。
+线条纤细，阴影轻浅，适合轻量信息表达。`,
+    preview_prompt: "pastel soft illustration, rounded shapes, low saturation colors, gentle gradients, light shadows",
+  },
+  {
+    type: StyleType.GRADIENT,
+    name: "渐变·流体光晕风",
+    name_en: "Gradient Glow Style",
+    description: `大面积流体渐变与光晕层叠，营造柔软的空间感。
+高亮过渡：紫/蓝/粉/青多色混合，背景深色提升对比。
+元素轮廓简洁，强调光感与现代科技气质。`,
+    preview_prompt: "fluid gradient glow, neon soft light, purple blue pink blend, modern abstract background, smooth transitions",
+  },
+  {
+    type: StyleType.HANDDRAWN,
+    name: "手绘·线稿涂色风",
+    name_en: "Hand-drawn Sketch Style",
+    description: `手绘线稿与轻微抖动笔触，边缘不完全规整。
+淡彩填充：水彩质感或轻薄马克笔效果，画面更具亲和力。
+构图轻松随意，适合故事化与情感表达。`,
+    preview_prompt: "hand-drawn sketch, light watercolor fill, textured lines, warm friendly illustration, casual composition",
+  },
 ];
+
+function mergeTemplates(
+  baseTemplates: StyleTemplate[],
+  overrideTemplates: StyleTemplate[]
+): StyleTemplate[] {
+  const mergedMap = new Map<string, StyleTemplate>();
+  baseTemplates.forEach((template) => {
+    mergedMap.set(template.type, template);
+  });
+  overrideTemplates.forEach((template) => {
+    mergedMap.set(template.type, template);
+  });
+
+  const baseTypes = new Set(baseTemplates.map((template) => template.type));
+  const mergedInOrder = baseTemplates.map(
+    (template) => mergedMap.get(template.type) || template
+  );
+  const extraTemplates = overrideTemplates.filter(
+    (template) => !baseTypes.has(template.type)
+  );
+
+  return [...mergedInOrder, ...extraTemplates];
+}
 
 interface StyleState {
   // State
@@ -175,7 +261,7 @@ export const useStyleStore = create<StyleState>((set, get) => ({
 
   reset: () => set(initialState),
 
-  // 加载风格模板（从服务器获取，失败时使用默认模板）
+  // 加载风格模板（从服务器获取，合并默认模板）
   loadTemplates: async () => {
     const { isLoadingTemplates } = get();
     if (isLoadingTemplates) return; // 避免重复加载
@@ -184,7 +270,9 @@ export const useStyleStore = create<StyleState>((set, get) => ({
     try {
       const response = await styleApi.getStyleTemplates();
       if (response.templates && response.templates.length > 0) {
-        set({ templates: response.templates });
+        const mergedTemplates = mergeTemplates(DEFAULT_TEMPLATES, response.templates);
+        set({ templates: mergedTemplates });
+        return;
       }
       // 如果服务器返回空数组，保留默认模板
     } catch (err) {

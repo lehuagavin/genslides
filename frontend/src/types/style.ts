@@ -14,6 +14,13 @@ export enum StyleType {
   CYBERPUNK = "cyberpunk",
   PAPERCUT = "papercut",
   INKWASH = "inkwash",
+  ISOMETRIC = "isometric",
+  BAUHAUS = "bauhaus",
+  RETRO = "retro",
+  BRUTALIST = "brutalist",
+  PASTEL = "pastel",
+  GRADIENT = "gradient",
+  HANDDRAWN = "handdrawn",
   CUSTOM = "custom",
 }
 
