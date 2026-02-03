@@ -52,6 +52,42 @@ const DEFAULT_TEMPLATES: StyleTemplate[] = [
 构图爆炸式扩张，中心向外辐射能量，元素溢出边界。`,
     preview_prompt: "Street graffiti art, spray paint texture, bold 3D lettering, vibrant neon colors on brick wall, urban style with drips and tags",
   },
+  {
+    type: StyleType.MINIMAL,
+    name: "极简·留白信息风",
+    name_en: "Minimal Clean Style",
+    description: `大量留白与清晰网格，模块间距充足，边界轻薄。
+色彩克制：米白/浅灰底（70%），深石墨文字（20%），单一强调色（10%）。
+线条细而直，图形以几何块面为主，信息层级靠字号与字重区分。`,
+    preview_prompt: "minimal clean design, lots of whitespace, off-white background, thin lines, single accent color, modern typography",
+  },
+  {
+    type: StyleType.CYBERPUNK,
+    name: "赛博朋克·霓虹夜景风",
+    name_en: "Cyberpunk Neon Style",
+    description: `深色夜景基调，霓虹青/品红对比强烈，边缘发光与光晕明显。
+加入城市雨夜、全息投影、线路纹理与反射高光，形成科技感层次。
+构图偏斜与透视拉伸，营造速度感与未来感。`,
+    preview_prompt: "cyberpunk neon city night, dark background, magenta and cyan glow, holographic elements, rain reflections, futuristic atmosphere",
+  },
+  {
+    type: StyleType.PAPERCUT,
+    name: "剪纸·层叠浮雕风",
+    name_en: "Papercut Layered Style",
+    description: `多层纸片叠加的浮雕质感，边缘清晰且有柔和投影。
+配色温润：奶油白/暖米色为底，辅以浅橙、豆绿、雾蓝点缀。
+构图以层级分区和大色块叠放为主，整体柔和治愈。`,
+    preview_prompt: "paper cut layered illustration, soft shadows, warm pastel palette, layered shapes, textured paper",
+  },
+  {
+    type: StyleType.INKWASH,
+    name: "水墨·山水留白风",
+    name_en: "Ink Wash Style",
+    description: `水墨晕染与干湿笔触并存，墨色由浓到淡自然过渡。
+留白充足，山水、云雾、远景用稀墨虚化，点缀一枚红印。
+色彩极简：黑灰为主，少量淡赭/淡蓝辅助。`,
+    preview_prompt: "traditional Chinese ink wash landscape, ink gradients, minimal colors, lots of negative space, red seal",
+  },
 ];
 
 interface StyleState {

@@ -10,6 +10,10 @@ export enum StyleType {
   DISNEY = "disney",
   MEMPHIS = "memphis",
   GRAFFITI = "graffiti",
+  MINIMAL = "minimal",
+  CYBERPUNK = "cyberpunk",
+  PAPERCUT = "papercut",
+  INKWASH = "inkwash",
   CUSTOM = "custom",
 }
 
