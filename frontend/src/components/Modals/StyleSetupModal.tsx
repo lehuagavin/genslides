@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { Modal, Button, Textarea, Loading } from "@/components/common";
+import { Modal, Button, Loading } from "@/components/common";
 import { useStyleStore } from "@/stores";
 import { cn } from "@/utils";
 import type { StyleType, StyleTemplate } from "@/types";
@@ -23,8 +23,6 @@ export function StyleSetupModal({
     showSetupModal,
     candidates,
     isGenerating,
-    promptInput,
-    setPromptInput,
     closeSetupModal,
     // 风格模板相关
     templates,
@@ -36,11 +34,16 @@ export function StyleSetupModal({
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // 当模板更新后，如果没有选中模板，自动选择第一个
+  // 当模板更新后，如果没有有效选中模板，自动选择第一个
   useEffect(() => {
-    const firstTemplate = templates[0];
-    if (firstTemplate && !selectedTemplate && showSetupModal) {
-      selectTemplate(firstTemplate);
+    if (!showSetupModal || templates.length === 0) return;
+
+    const isSelectedValid = selectedTemplate
+      ? templates.some((template) => template.type === selectedTemplate.type)
+      : false;
+
+    if (!isSelectedValid) {
+      selectTemplate(templates[0]);
     }
   }, [templates, selectedTemplate, showSetupModal, selectTemplate]);
 
@@ -52,9 +55,10 @@ export function StyleSetupModal({
   };
 
   const handleGenerate = async () => {
-    if (promptInput.trim()) {
+    const prompt = selectedTemplate?.description?.trim() || "";
+    if (prompt) {
       setSelectedCandidate(null);
-      await onGenerateCandidates(promptInput);
+      await onGenerateCandidates(prompt);
     }
   };
 
@@ -82,7 +86,7 @@ export function StyleSetupModal({
       showCloseButton={false}
     >
       <p className="mb-4 text-[var(--md-slate)]">
-        选择一个预设风格模板或自定义风格描述，然后生成风格参考图片。
+        选择一个预设风格模板，然后生成风格参考图片。
       </p>
 
       {/* 风格模板选择器 */}
@@ -100,6 +104,9 @@ export function StyleSetupModal({
             onChange={(e) => handleTemplateChange(e.target.value)}
             className="w-full rounded border border-[var(--md-graphite)] bg-white px-3 py-2 text-gray-900 focus:border-[var(--md-sky)] focus:outline-none"
           >
+            <option value="" disabled className="bg-white text-gray-900">
+              -- 选择模板 --
+            </option>
             {templates.map((template: StyleTemplate) => (
               <option key={template.type} value={template.type} className="bg-white text-gray-900">
                 🎨 {template.name} ({template.name_en})
@@ -109,23 +116,26 @@ export function StyleSetupModal({
         )}
       </div>
 
-      {/* 风格描述编辑器 */}
+      {/* 风格描述展示 */}
       <div className="mb-6">
         <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
           风格描述
         </label>
-        <Textarea
-          value={promptInput}
-          onChange={(e) => setPromptInput(e.target.value)}
-          placeholder="请选择风格模板或输入自定义描述..."
-          className="h-40"
-        />
+        <div
+          className={cn(
+            "min-h-[160px] rounded border border-[var(--md-graphite)] bg-[var(--md-fog)] px-4 py-3 text-sm",
+            "whitespace-pre-line text-[var(--md-ink)]",
+            !selectedTemplate && "text-[var(--md-slate)]"
+          )}
+        >
+          {selectedTemplate ? selectedTemplate.description : "请选择风格模板以查看描述"}
+        </div>
         <p className="mt-1 text-xs text-[var(--md-slate)]">
-          您可以修改风格描述来自定义生成效果
+          选择模板后即可生成风格参考图
         </p>
         <Button
           onClick={handleGenerate}
-          disabled={!promptInput.trim() || isGenerating}
+          disabled={!selectedTemplate?.description?.trim() || isGenerating}
           isLoading={isGenerating}
           className="mt-3"
         >

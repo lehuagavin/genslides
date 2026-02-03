@@ -2,8 +2,8 @@
  * Style settings modal for changing existing style
  */
 
-import { useState } from "react";
-import { Modal, Button, Textarea, Loading } from "@/components/common";
+import { useState, useEffect } from "react";
+import { Modal, Button, Loading } from "@/components/common";
 import { useStyleStore } from "@/stores";
 import { cn } from "@/utils";
 import type { StyleType, StyleTemplate } from "@/types";
@@ -24,8 +24,6 @@ export function StyleSettingsModal({
     style,
     candidates,
     isGenerating,
-    promptInput,
-    setPromptInput,
     closeSettingsModal,
     // 风格模板相关
     templates,
@@ -37,6 +35,23 @@ export function StyleSettingsModal({
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  // 打开设置弹窗时，默认选择当前风格对应模板或第一个模板
+  useEffect(() => {
+    if (!showSettingsModal || templates.length === 0) return;
+    if (selectedTemplate) return;
+
+    const preferredTemplate = style?.style_type
+      ? templates.find((template) => template.type === style.style_type)
+      : null;
+
+    if (preferredTemplate) {
+      selectTemplate(preferredTemplate);
+      return;
+    }
+
+    selectTemplate(templates[0]);
+  }, [showSettingsModal, templates, selectedTemplate, style?.style_type, selectTemplate]);
+
   const handleTemplateChange = (templateType: string) => {
     const template = templates.find((t) => t.type === templateType);
     selectTemplate(template || null);
@@ -45,9 +60,10 @@ export function StyleSettingsModal({
   };
 
   const handleGenerate = async () => {
-    if (promptInput.trim()) {
+    const prompt = selectedTemplate?.description?.trim() || "";
+    if (prompt) {
       setSelectedCandidate(null);
-      await onGenerateCandidates(promptInput);
+      await onGenerateCandidates(prompt);
     }
   };
 
@@ -124,20 +140,23 @@ export function StyleSettingsModal({
         )}
       </div>
 
-      {/* New style input */}
+      {/* 风格描述展示 */}
       <div className="mb-6">
         <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
           风格描述
         </label>
-        <Textarea
-          value={promptInput}
-          onChange={(e) => setPromptInput(e.target.value)}
-          placeholder="选择模板或输入自定义风格描述..."
-          className="h-32"
-        />
+        <div
+          className={cn(
+            "min-h-[128px] rounded border border-[var(--md-graphite)] bg-[var(--md-fog)] px-4 py-3 text-sm",
+            "whitespace-pre-line text-[var(--md-ink)]",
+            !selectedTemplate && "text-[var(--md-slate)]"
+          )}
+        >
+          {selectedTemplate ? selectedTemplate.description : "请选择风格模板以查看描述"}
+        </div>
         <Button
           onClick={handleGenerate}
-          disabled={!promptInput.trim() || isGenerating}
+          disabled={!selectedTemplate?.description?.trim() || isGenerating}
           isLoading={isGenerating}
           className="mt-3"
         >
