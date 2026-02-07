@@ -46,7 +46,7 @@ make deploy
 # Backend API: http://localhost:3003
 ```
 
-For detailed Docker deployment instructions, see [DOCKER.md](./DOCKER.md).
+For more details, see the `docker-compose.yml` and `Makefile` in the project root.
 
 ### Manual Setup
 
@@ -97,7 +97,7 @@ npm run dev
 
 ## Docker Deployment
 
-GenSlides supports Docker Compose for easy deployment. See [DOCKER.md](./DOCKER.md) for complete documentation.
+GenSlides supports Docker Compose for easy deployment.
 
 ### Quick Commands
 
@@ -157,10 +157,12 @@ genslides/
 │       ├── components/    # React components
 │       ├── hooks/         # Custom hooks
 │       ├── stores/        # Zustand state
+│       ├── styles/        # Global styles
 │       ├── types/         # TypeScript types
 │       └── utils/         # Utility functions
 │
-├── slides/                # Data storage (generated)
+├── specs/                 # Feature specs and design docs
+├── slides/                # Data storage (generated at runtime)
 └── .env                   # Environment config
 ```
 
