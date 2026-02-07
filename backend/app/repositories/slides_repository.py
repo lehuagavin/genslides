@@ -152,6 +152,7 @@ class SlidesRepository:
                 created_at=datetime.fromisoformat(slide_data["created_at"]),
                 updated_at=datetime.fromisoformat(slide_data["updated_at"]),
                 images=images,
+                selected_image_hash=slide_data.get("selected_image_hash"),
             )
             slides.append(slide)
 
@@ -204,7 +205,7 @@ class SlidesRepository:
             data["style"] = style_data
 
         for slide in project.slides:
-            slide_data = {
+            slide_data: dict[str, Any] = {
                 "sid": slide.sid,
                 "content": slide.content,
                 "created_at": slide.created_at.isoformat(),
@@ -218,6 +219,8 @@ class SlidesRepository:
                     for img in slide.images
                 ],
             }
+            if slide.selected_image_hash:
+                slide_data["selected_image_hash"] = slide.selected_image_hash
             data["slides"].append(slide_data)
 
         return data

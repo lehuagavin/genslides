@@ -1,21 +1,25 @@
 """Images API routes."""
 
+import io
 import logging
 import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi.responses import StreamingResponse
 
-from app.api.dependencies import get_image_service, get_slides_service
+from app.api.dependencies import get_export_service, get_image_service, get_slides_service
 from app.api.routes.websocket import manager
 from app.api.schemas import (
     DeleteImageResponse,
     GenerateImageRequest,
     GenerateTaskResponse,
     GetImagesResponse,
+    SelectImageRequest,
+    SelectImageResponse,
     SlideImageResponse,
 )
-from app.services import ImageService, SlidesService
+from app.services import ExportService, ImageService, SlidesService
 from app.utils import compute_content_hash
 
 logger = logging.getLogger(__name__)
@@ -153,6 +157,37 @@ async def _generate_and_notify(
                 },
             },
         )
+
+
+@router.put("/{slug}/{sid}/selected-image", response_model=SelectImageResponse)
+async def select_image(
+    slug: str,
+    sid: str,
+    request: SelectImageRequest,
+    slides_service: Annotated[SlidesService, Depends(get_slides_service)],
+) -> SelectImageResponse:
+    """Select which image to display for a slide."""
+    slide = await slides_service.select_image(slug, sid, request.hash)
+    return SelectImageResponse(
+        success=True,
+        sid=sid,
+        selected_image_hash=slide.selected_image_hash or request.hash,
+    )
+
+
+@router.get("/{slug}/export")
+async def export_project(
+    slug: str,
+    service: Annotated[ExportService, Depends(get_export_service)],
+) -> StreamingResponse:
+    """Export project as ZIP file with numbered JPG images."""
+    zip_data = await service.export_zip(slug)
+
+    return StreamingResponse(
+        io.BytesIO(zip_data),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{slug}.zip"'},
+    )
 
 
 @router.delete("/{slug}/{sid}/images/{image_hash}", response_model=DeleteImageResponse)

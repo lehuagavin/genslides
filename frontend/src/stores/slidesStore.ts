@@ -14,7 +14,6 @@ interface SlidesState {
   isLoading: boolean;
   error: string | null;
   cost: CostInfo | null;
-  displayedImageHash: Record<string, string>; // sid -> displayed image hash
   imageEngine: "gemini" | "volcengine"; // Image generation engine
 
   // Actions
@@ -26,7 +25,7 @@ interface SlidesState {
   updateSlide: (sid: string, content: string) => void;
   updateSlideImage: (sid: string, image: SlideImage) => void;
   deleteSlideImage: (sid: string, imageHash: string) => void;
-  setDisplayedImage: (sid: string, hash: string) => void;
+  setSelectedImageHash: (sid: string, hash: string) => void;
   deleteSlide: (sid: string) => void;
   reorderSlides: (order: string[]) => void;
   setCost: (cost: CostInfo) => void;
@@ -34,25 +33,6 @@ interface SlidesState {
   setError: (error: string | null) => void;
   setImageEngine: (engine: "gemini" | "volcengine") => void;
   reset: () => void;
-}
-
-// Load displayedImageHash from localStorage
-function loadDisplayedImageHash(): Record<string, string> {
-  try {
-    const stored = localStorage.getItem("genslides:displayedImageHash");
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-}
-
-// Save displayedImageHash to localStorage
-function saveDisplayedImageHash(hash: Record<string, string>): void {
-  try {
-    localStorage.setItem("genslides:displayedImageHash", JSON.stringify(hash));
-  } catch {
-    // Ignore storage errors
-  }
 }
 
 const initialState = {
@@ -63,7 +43,6 @@ const initialState = {
   isLoading: false,
   error: null,
   cost: null,
-  displayedImageHash: loadDisplayedImageHash(),
   imageEngine: "gemini" as const,
 };
 
@@ -143,62 +122,46 @@ export const useSlidesStore = create<SlidesState>((set) => ({
         const hasNewImage = existingImages.some((img) => img.hash === image.hash);
         const newImages = hasNewImage ? existingImages : [...existingImages, image];
         
-        return { ...s, current_image: image, images: newImages };
+        // Auto-select the new image (backend also does this, keep in sync)
+        return { ...s, current_image: image, images: newImages, selected_image_hash: image.hash };
       }),
-      // Auto-select the new image for display
-      displayedImageHash: (() => {
-        const newHash = { ...state.displayedImageHash, [sid]: image.hash };
-        saveDisplayedImageHash(newHash);
-        return newHash;
-      })(),
     })),
 
-  setDisplayedImage: (sid, hash) =>
-    set((state) => {
-      const newHash = { ...state.displayedImageHash, [sid]: hash };
-      saveDisplayedImageHash(newHash);
-      return { displayedImageHash: newHash };
-    }),
+  setSelectedImageHash: (sid, hash) =>
+    set((state) => ({
+      slides: state.slides.map((s) =>
+        s.sid === sid ? { ...s, selected_image_hash: hash } : s
+      ),
+    })),
 
   deleteSlideImage: (sid, imageHash) =>
-    set((state) => {
-      const newDisplayedImageHash = { ...state.displayedImageHash };
+    set((state) => ({
+      slides: state.slides.map((s) => {
+        if (s.sid !== sid) return s;
 
-      return {
-        slides: state.slides.map((s) => {
-          if (s.sid !== sid) return s;
+        // Remove the image from images array
+        const newImages = s.images?.filter((img) => img.hash !== imageHash) || [];
 
-          // Remove the image from images array
-          const newImages = s.images?.filter((img) => img.hash !== imageHash) || [];
+        // Update current_image if it was the deleted one
+        let newCurrentImage = s.current_image;
+        if (s.current_image?.hash === imageHash) {
+          newCurrentImage = newImages.length > 0 ? (newImages[newImages.length - 1] ?? null) : null;
+        }
 
-          // Update current_image if it was the deleted one
-          let newCurrentImage = s.current_image;
-          if (s.current_image?.hash === imageHash) {
-            newCurrentImage = newImages.length > 0 ? (newImages[newImages.length - 1] ?? null) : null;
-          }
+        // Update selected_image_hash if it was the deleted one
+        let newSelectedHash = s.selected_image_hash;
+        if (s.selected_image_hash === imageHash) {
+          newSelectedHash = newImages.length > 0 ? (newImages[newImages.length - 1]?.hash ?? null) : null;
+        }
 
-          // Update displayed image if it was the deleted one
-          if (state.displayedImageHash[sid] === imageHash) {
-            if (newImages.length > 0) {
-              const lastImage = newImages[newImages.length - 1];
-              if (lastImage) {
-                newDisplayedImageHash[sid] = lastImage.hash;
-              }
-            } else {
-              delete newDisplayedImageHash[sid];
-            }
-            saveDisplayedImageHash(newDisplayedImageHash);
-          }
-
-          return {
-            ...s,
-            images: newImages,
-            current_image: newCurrentImage,
-          };
-        }),
-        displayedImageHash: newDisplayedImageHash,
-      };
-    }),
+        return {
+          ...s,
+          images: newImages,
+          current_image: newCurrentImage,
+          selected_image_hash: newSelectedHash,
+        };
+      }),
+    })),
 
   deleteSlide: (sid) =>
     set((state) => {

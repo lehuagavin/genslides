@@ -7,6 +7,7 @@ import { TitleInput } from "./TitleInput";
 import { StyleBadge } from "./StyleBadge";
 import { CostDisplay } from "./CostDisplay";
 import { PlayButton } from "./PlayButton";
+import { ExportButton } from "./ExportButton";
 import { EngineSelector } from "./EngineSelector";
 import { useSlidesStore, useStyleStore, usePlayerStore } from "@/stores";
 
@@ -16,7 +17,7 @@ interface HeaderProps {
 }
 
 export function Header({ onTitleChange, onBackToHome }: HeaderProps): JSX.Element {
-  const { title, slides, cost } = useSlidesStore();
+  const { slug, title, slides, cost } = useSlidesStore();
   const { style, openSettingsModal, openSetupModal } = useStyleStore();
   const { play } = usePlayerStore();
 
@@ -55,9 +56,16 @@ export function Header({ onTitleChange, onBackToHome }: HeaderProps): JSX.Elemen
         <CostDisplay cost={cost} />
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 [&_.md-btn+.md-btn]:!ml-0">
         <EngineSelector />
+        <div className="h-5 w-px bg-[var(--md-graphite)] opacity-25" />
         <StyleBadge style={style} onClick={handleStyleClick} />
+        {slug && (
+          <ExportButton
+            slug={slug}
+            disabled={!slides.some((s) => s.current_image)}
+          />
+        )}
         <PlayButton onClick={handlePlay} disabled={!canPlay} />
       </div>
     </header>

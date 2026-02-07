@@ -6,6 +6,7 @@ from app.config import get_settings
 from app.repositories import ImageRepository, SlidesRepository, StyleRepository
 from app.services import (
     CostService,
+    ExportService,
     GeminiService,
     ImageService,
     SlidesService,
@@ -77,4 +78,12 @@ def get_image_service() -> ImageService:
         image_repository=get_image_repository(),
         gemini_service=get_gemini_service(),
         volcengine_service=get_volcengine_service(),
+    )
+
+
+def get_export_service() -> ExportService:
+    """Get export service instance."""
+    return ExportService(
+        slides_repository=get_slides_repository(),
+        image_repository=get_image_repository(),
     )

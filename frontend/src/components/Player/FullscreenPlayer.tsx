@@ -9,7 +9,7 @@ import { cn } from "@/utils";
 export function FullscreenPlayer(): JSX.Element | null {
   const { isFullscreen, currentIndex, isPlaying, next, prev, exitFullscreen, pause, play } =
     usePlayerStore();
-  const { slides, displayedImageHash } = useSlidesStore();
+  const { slides } = useSlidesStore();
 
   // Note: Keyboard navigation is handled by useKeyboard hook in ProjectEditor
   // to avoid duplicate event handlers
@@ -46,9 +46,10 @@ export function FullscreenPlayer(): JSX.Element | null {
   // Get the displayed image for current slide (respects user selection)
   const getDisplayedImage = () => {
     if (!currentSlide) return null;
-    const hash = displayedImageHash[currentSlide.sid];
-    if (hash && currentSlide.images) {
-      const found = currentSlide.images.find((img) => img.hash === hash);
+    if (currentSlide.selected_image_hash && currentSlide.images) {
+      const found = currentSlide.images.find(
+        (img) => img.hash === currentSlide.selected_image_hash
+      );
       if (found) return found;
     }
     // Fallback to current_image

@@ -115,6 +115,25 @@ class SlidesService:
         await self.repository.save_project(project)
         return project.slides
 
+    async def select_image(self, slug: str, sid: str, image_hash: str) -> Slide:
+        """Select which image to display for a slide."""
+        project = await self.get_project(slug)
+        slide = project.get_slide(sid)
+
+        if slide is None:
+            raise SlideNotFoundError(sid)
+
+        # Verify the image exists
+        if not any(img.hash == image_hash for img in slide.images):
+            from app.exceptions import ImageNotFoundError
+
+            raise ImageNotFoundError(image_hash)
+
+        slide.selected_image_hash = image_hash
+        project.updated_at = datetime.now()
+        await self.repository.save_project(project)
+        return slide
+
     def get_content_hash(self, content: str) -> str:
         """Get the hash of slide content."""
         return compute_content_hash(content)

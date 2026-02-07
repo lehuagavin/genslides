@@ -22,10 +22,19 @@ class Slide:
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
     images: list[SlideImage] = field(default_factory=list)
+    selected_image_hash: str | None = None  # User-selected image for display/export
 
     def get_current_image(self, content_hash: str) -> SlideImage | None:
         """Get the most recent image matching the current content hash."""
         for image in reversed(self.images):
             if image.hash == content_hash:
                 return image
+        return self.images[-1] if self.images else None
+
+    def get_selected_image(self) -> SlideImage | None:
+        """Get the user-selected image, falling back to the latest image."""
+        if self.selected_image_hash:
+            for image in self.images:
+                if image.hash == self.selected_image_hash:
+                    return image
         return self.images[-1] if self.images else None

@@ -122,6 +122,8 @@ class ImageService:
             # Check if image already exists (another request might have added it)
             if not any(img.hash == content_hash for img in updated_slide.images):
                 updated_slide.images.append(slide_image)
+            # Auto-select the newly generated image
+            updated_slide.selected_image_hash = content_hash
             updated_project.cost.slide_generations += 1
             updated_project.cost.total_images += 1
             updated_project.cost.estimated_cost = (
@@ -186,6 +188,10 @@ class ImageService:
 
         # Remove from slide's images list
         slide.images = [img for img in slide.images if img.hash != image_hash]
+
+        # If the deleted image was the selected one, fall back to the latest
+        if slide.selected_image_hash == image_hash:
+            slide.selected_image_hash = slide.images[-1].hash if slide.images else None
 
         # Update project
         project.updated_at = datetime.now()

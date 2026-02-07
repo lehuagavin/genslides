@@ -6,6 +6,8 @@ import { useMemo, useCallback } from "react";
 import { MainImage } from "./MainImage";
 import { ThumbnailList } from "./ThumbnailList";
 import { useSlidesStore, useSelectedSlide, useStyleStore, useUIStore } from "@/stores";
+import { imagesApi } from "@/api";
+import { logger } from "@/utils";
 import type { SlideImage } from "@/types";
 
 interface PreviewProps {
@@ -17,7 +19,7 @@ export function Preview({ onGenerate, onDeleteImage }: PreviewProps): JSX.Elemen
   const slide = useSelectedSlide();
   const { style } = useStyleStore();
   const { isSlideGenerating } = useUIStore();
-  const { displayedImageHash, setDisplayedImage } = useSlidesStore();
+  const { slug, setSelectedImageHash } = useSlidesStore();
 
   const handleGenerate = useCallback(() => {
     if (slide) {
@@ -48,26 +50,29 @@ export function Preview({ onGenerate, onDeleteImage }: PreviewProps): JSX.Elemen
     return [];
   }, [slide]);
 
-  // Get the currently displayed image
+  // Get the currently displayed image based on selected_image_hash from backend
   const displayedImage = useMemo(() => {
     if (!slide) return null;
-    const hash = displayedImageHash[slide.sid];
-    if (hash) {
-      const found = images.find((img) => img.hash === hash);
+    if (slide.selected_image_hash) {
+      const found = images.find((img) => img.hash === slide.selected_image_hash);
       if (found) return found;
     }
     // Fallback to current_image or last image
     return slide.current_image || images[images.length - 1] || null;
-  }, [slide, displayedImageHash, images]);
+  }, [slide, images]);
 
-  // Handle image selection
+  // Handle image selection - update locally and persist to backend
   const handleSelectImage = useCallback(
     (hash: string) => {
-      if (slide) {
-        setDisplayedImage(slide.sid, hash);
+      if (slide && slug) {
+        setSelectedImageHash(slide.sid, hash);
+        // Persist to backend (fire-and-forget)
+        imagesApi.selectImage(slug, slide.sid, hash).catch((err) => {
+          logger.error("Failed to persist image selection:", err);
+        });
       }
     },
-    [slide, setDisplayedImage]
+    [slide, slug, setSelectedImageHash]
   );
 
   // Check if content matches any image

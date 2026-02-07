@@ -34,6 +34,12 @@ export interface GetEngineResponse {
   engine: "gemini" | "volcengine";
 }
 
+export interface SelectImageResponse {
+  success: boolean;
+  sid: string;
+  selected_image_hash: string;
+}
+
 export const imagesApi = {
   /**
    * Get all images for a slide
@@ -85,5 +91,30 @@ export const imagesApi = {
     return api.put<UpdateEngineResponse>(`/slides/${slug}/engine`, {
       engine,
     });
+  },
+
+  /**
+   * Select which image to display for a slide
+   */
+  selectImage(
+    slug: string,
+    sid: string,
+    hash: string
+  ): Promise<SelectImageResponse> {
+    return api.put<SelectImageResponse>(
+      `/slides/${slug}/${sid}/selected-image`,
+      { hash }
+    );
+  },
+
+  /**
+   * Export project as ZIP file with numbered JPG images
+   */
+  async exportProject(slug: string): Promise<Blob> {
+    const response = await fetch(`/api/slides/${slug}/export`);
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.statusText}`);
+    }
+    return response.blob();
   },
 };

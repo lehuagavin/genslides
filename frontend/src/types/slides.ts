@@ -19,6 +19,7 @@ export interface Slide {
   updated_at: string;
   current_image: SlideImage | null;
   images?: SlideImage[]; // All generated images for this slide
+  selected_image_hash?: string | null; // User-selected image hash (persisted on backend)
 }
 
 export interface CostInfo {

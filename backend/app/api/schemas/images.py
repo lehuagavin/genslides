@@ -33,3 +33,17 @@ class DeleteImageResponse(BaseModel):
 
     success: bool
     deleted_hash: str
+
+
+class SelectImageRequest(BaseModel):
+    """Request schema for selecting an image to display."""
+
+    hash: str
+
+
+class SelectImageResponse(BaseModel):
+    """Response schema for image selection."""
+
+    success: bool
+    sid: str
+    selected_image_hash: str

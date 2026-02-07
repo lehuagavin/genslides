@@ -48,22 +48,18 @@ export function EngineSelector(): JSX.Element {
     ENGINE_OPTIONS.find((opt) => opt.value === imageEngine)?.label ?? imageEngine;
 
   return (
-    <div className="flex items-center gap-2" title={`当前绘图引擎：${currentLabel}`}>
-      <label className="text-xs font-medium text-[var(--md-slate)] normal-case">
-        绘图引擎
-      </label>
-      <select
-        value={imageEngine}
-        onChange={handleEngineChange}
-        disabled={isSwitching}
-        className="px-2 py-1 border-2 border-[var(--md-graphite)] rounded text-xs normal-case bg-[var(--md-cloud)] text-[var(--md-ink)] font-medium cursor-pointer hover:bg-[var(--md-fog)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sky-strong)] disabled:opacity-50 disabled:cursor-wait transition-colors shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
-      >
-        {ENGINE_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      value={imageEngine}
+      onChange={handleEngineChange}
+      disabled={isSwitching}
+      title={`当前绘图引擎：${currentLabel}`}
+      className="md-btn md-btn-secondary px-3 py-1.5 border-2 border-[var(--md-graphite)] text-xs font-bold uppercase tracking-wider normal-case bg-[var(--md-cream)] text-[var(--md-ink)] cursor-pointer hover:bg-[var(--md-fog)] focus:outline-none focus:ring-2 focus:ring-[var(--md-sky-strong)] disabled:opacity-50 disabled:cursor-wait transition-all"
+    >
+      {ENGINE_OPTIONS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }

@@ -22,6 +22,7 @@ class SlideResponse(BaseModel):
     updated_at: str
     current_image: SlideImageResponse | None = None
     images: list[SlideImageResponse] = []  # All generated images for this slide
+    selected_image_hash: str | None = None  # User-selected image hash
 
 
 class StyleResponse(BaseModel):

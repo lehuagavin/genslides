@@ -63,6 +63,7 @@ def _slide_to_response(slide: Slide, slug: str) -> SlideResponse:
         updated_at=slide.updated_at.isoformat(),
         current_image=current_image,
         images=all_images,
+        selected_image_hash=slide.selected_image_hash,
     )
 
 

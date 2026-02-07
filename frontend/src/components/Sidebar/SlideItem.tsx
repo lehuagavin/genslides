@@ -5,7 +5,6 @@
 import { useState, useMemo } from "react";
 import { cn } from "@/utils";
 import { SlideEditModal } from "./SlideEditModal";
-import { useSlidesStore } from "@/stores";
 import type { Slide, SlideImage } from "@/types";
 
 interface SlideItemProps {
@@ -42,18 +41,16 @@ export function SlideItem({
   onDrop,
 }: SlideItemProps): JSX.Element {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { displayedImageHash } = useSlidesStore();
 
-  // Get the currently displayed image for this slide
+  // Get the currently displayed image for this slide (uses backend-persisted selection)
   const displayedImage: SlideImage | null = useMemo(() => {
-    const hash = displayedImageHash[slide.sid];
-    if (hash && slide.images) {
-      const found = slide.images.find((img) => img.hash === hash);
+    if (slide.selected_image_hash && slide.images) {
+      const found = slide.images.find((img) => img.hash === slide.selected_image_hash);
       if (found) return found;
     }
     // Fallback to current_image
     return slide.current_image;
-  }, [slide.sid, slide.images, slide.current_image, displayedImageHash]);
+  }, [slide.selected_image_hash, slide.images, slide.current_image]);
 
   const handleDoubleClick = () => {
     setIsEditModalOpen(true);
