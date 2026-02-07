@@ -14,7 +14,7 @@ interface SlidesState {
   isLoading: boolean;
   error: string | null;
   cost: CostInfo | null;
-  imageEngine: "gemini" | "volcengine"; // Image generation engine
+  imageEngine: "gemini" | "volcengine" | "nano_banana"; // Image generation engine
 
   // Actions
   setSlug: (slug: string) => void;
@@ -31,7 +31,7 @@ interface SlidesState {
   setCost: (cost: CostInfo) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
-  setImageEngine: (engine: "gemini" | "volcengine") => void;
+  setImageEngine: (engine: "gemini" | "volcengine" | "nano_banana") => void;
   reset: () => void;
 }
 

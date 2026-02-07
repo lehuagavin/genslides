@@ -11,6 +11,7 @@ from app.models import Project, SlideImage
 from app.repositories import ImageRepository, SlidesRepository, StyleRepository
 from app.services.gemini_service import GeminiService
 from app.services.image_generation_service import ImageGenerationService
+from app.services.nano_banana_service import NanoBananaService
 from app.services.volcengine_service import VolcEngineService
 from app.utils import compute_content_hash
 
@@ -27,17 +28,21 @@ class ImageService:
         image_repository: ImageRepository,
         gemini_service: GeminiService,
         volcengine_service: VolcEngineService,
+        nano_banana_service: NanoBananaService,
     ):
         self.slides_repository = slides_repository
         self.style_repository = style_repository
         self.image_repository = image_repository
         self.gemini_service = gemini_service
         self.volcengine_service = volcengine_service
+        self.nano_banana_service = nano_banana_service
 
     def _get_engine(self, project: Project) -> ImageGenerationService:
         """Select image generation engine based on project configuration."""
         if project.image_engine == "gemini":
             return self.gemini_service
+        if project.image_engine == "nano_banana":
+            return self.nano_banana_service
         return self.volcengine_service  # Default to VolcEngine
 
     async def get_images(self, slug: str, sid: str) -> list[SlideImage]:

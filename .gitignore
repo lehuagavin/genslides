@@ -38,9 +38,6 @@ htmlcov/
 *.egg-info/
 build/
 
-# Slides data - ignore non-selected generated images
-backend/slides/*/images/
-
 # Logs
 *.log
 

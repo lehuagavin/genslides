@@ -9,6 +9,7 @@ from app.services import (
     ExportService,
     GeminiService,
     ImageService,
+    NanoBananaService,
     SlidesService,
     StyleService,
     VolcEngineService,
@@ -48,6 +49,17 @@ def get_volcengine_service() -> VolcEngineService:
     return VolcEngineService(settings.ark_api_key)
 
 
+def get_nano_banana_service() -> NanoBananaService:
+    """Get Nano Banana service instance (lazy-loaded)."""
+    settings = get_settings()
+    return NanoBananaService(
+        api_key=settings.nano_api_key,
+        base_url=settings.nano_base_url,
+        model=settings.nano_model,
+        image_size=settings.nano_image_size,
+    )
+
+
 @lru_cache
 def get_cost_service() -> CostService:
     """Get cost service instance."""
@@ -67,6 +79,7 @@ def get_style_service() -> StyleService:
         style_repository=get_style_repository(),
         gemini_service=get_gemini_service(),
         volcengine_service=get_volcengine_service(),
+        nano_banana_service=get_nano_banana_service(),
     )
 
 
@@ -78,6 +91,7 @@ def get_image_service() -> ImageService:
         image_repository=get_image_repository(),
         gemini_service=get_gemini_service(),
         volcengine_service=get_volcengine_service(),
+        nano_banana_service=get_nano_banana_service(),
     )
 
 

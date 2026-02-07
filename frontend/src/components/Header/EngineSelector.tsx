@@ -11,6 +11,7 @@ import { useState, useCallback } from "react";
 const ENGINE_OPTIONS = [
   { value: "gemini" as const, label: "Gemini 3 Pro" },
   { value: "volcengine" as const, label: "Seedream 4.5" },
+  { value: "nano_banana" as const, label: "Nano Banana" },
 ];
 
 export function EngineSelector(): JSX.Element {
@@ -23,7 +24,7 @@ export function EngineSelector(): JSX.Element {
     async (event: React.ChangeEvent<HTMLSelectElement>) => {
       if (!slug || isSwitching) return;
 
-      const newEngine = event.target.value as "gemini" | "volcengine";
+      const newEngine = event.target.value as "gemini" | "volcengine" | "nano_banana";
       if (newEngine === imageEngine) return;
 
       // Optimistic update: update UI immediately

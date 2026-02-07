@@ -1,10 +1,10 @@
 cost:
-  estimated_cost: 0.24
-  slide_generations: 4
+  estimated_cost: 0.28
+  slide_generations: 6
   style_generations: 8
-  total_images: 12
+  total_images: 14
 created_at: '2026-02-07T10:58:28.830046'
-image_engine: gemini
+image_engine: nano_banana
 slides:
 - content: '标题区域：
 
@@ -69,18 +69,12 @@ slides:
     六大哲学相互支撑，形成完整体系——让 Rust 成为操作系统、浏览器引擎、云基础设施等高安全高性能场景的首选语言，连续多年 Stack Overflow "最受喜爱语言"。'
   created_at: '2026-02-07T11:38:06.197760'
   images:
-  - created_at: '2026-02-07T11:38:29.609856'
-    hash: 15db494f8d0b272d
-    path: images/slide-16740b75/15db494f8d0b272d.jpg
-  - created_at: '2026-02-07T11:39:30.056175'
-    hash: 8bc85c258f104337
-    path: images/slide-16740b75/8bc85c258f104337.jpg
-  - created_at: '2026-02-07T12:50:42.938546'
+  - created_at: '2026-02-07T21:39:31.742555'
     hash: 40e645f989de1b2b
     path: images/slide-16740b75/40e645f989de1b2b.jpg
   selected_image_hash: 40e645f989de1b2b
   sid: slide-16740b75
-  updated_at: '2026-02-07T12:50:14.788936'
+  updated_at: '2026-02-07T21:16:19.443515'
 - content: "标题\nRust 所有权系统全景解析\n副标题：编译期内存安全 · 零运行时开销 · 无需 GC\n布局：上中下三段式\n顶部区域：定位与背景（约\
     \ 15%）\n左侧一句话定位：Rust 通过所有权系统在编译期解决内存安全和线程安全问题，无需 GC，零运行时开销。\n右侧放三栏横向对比（极简表格，三列）：\n\
     C/C++ 手动管理\tJava/Go 垃圾回收\tRust 所有权系统\nmalloc/free\tGC 运行时扫描\t编译期静态分析\n悬垂指针、双重释放\t\
@@ -116,4 +110,4 @@ style:
   style_name: 水墨山水
   style_type: custom
 title: rust
-updated_at: '2026-02-07T19:10:43.814400'
+updated_at: '2026-02-07T21:41:23.871256'

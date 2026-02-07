@@ -86,3 +86,14 @@ class GeminiAPIError(AppError):
             message=message,
             status_code=502,
         )
+
+
+class NanoBananaAPIError(AppError):
+    """Raised when Nano Banana API call fails."""
+
+    def __init__(self, message: str = "Nano Banana API call failed"):
+        super().__init__(
+            code="NANO_BANANA_API_ERROR",
+            message=message,
+            status_code=502,
+        )

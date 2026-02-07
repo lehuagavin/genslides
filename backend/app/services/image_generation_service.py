@@ -7,7 +7,7 @@ class ImageGenerationService(Protocol):
     """Protocol for image generation services.
 
     This defines the interface that all image generation services must implement.
-    Both GeminiService and VolcEngineService implement this protocol.
+    GeminiService, VolcEngineService, and NanoBananaService implement this protocol.
     """
 
     async def generate_style_images(

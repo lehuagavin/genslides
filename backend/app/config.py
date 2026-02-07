@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     # VolcEngine Ark API
     ark_api_key: str = ""
 
+    # Nano Banana API
+    nano_api_key: str = ""
+    nano_base_url: str = "https://api.mmw.ink"
+    nano_model: str = "[A]gemini-3-pro-image-preview"
+    nano_image_size: str = "2K"
+
     # Storage
     slides_base_path: str = "./slides"
 

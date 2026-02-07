@@ -56,7 +56,7 @@ class ProjectResponse(BaseModel):
     style: StyleResponse | None = None
     slides: list[SlideResponse]
     cost: CostResponse
-    image_engine: str = "volcengine"  # "gemini" | "volcengine"
+    image_engine: str = "volcengine"  # "gemini" | "volcengine" | "nano_banana"
 
 
 class UpdateTitleRequest(BaseModel):
@@ -133,7 +133,7 @@ class ProjectListResponse(BaseModel):
 class UpdateEngineRequest(BaseModel):
     """Request schema for updating image generation engine."""
 
-    engine: str = Field(..., pattern="^(gemini|volcengine)$")
+    engine: str = Field(..., pattern="^(gemini|volcengine|nano_banana)$")
 
 
 class UpdateEngineResponse(BaseModel):

@@ -209,8 +209,8 @@ async def update_image_engine(
     """Update the image generation engine for a project."""
     from app.exceptions import InvalidRequestError
 
-    if request.engine not in ["gemini", "volcengine"]:
-        raise InvalidRequestError("Engine must be 'gemini' or 'volcengine'")
+    if request.engine not in ["gemini", "volcengine", "nano_banana"]:
+        raise InvalidRequestError("Engine must be 'gemini', 'volcengine', or 'nano_banana'")
 
     project = await service.update_engine(slug, request.engine)
 

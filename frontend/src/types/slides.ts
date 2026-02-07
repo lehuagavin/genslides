@@ -42,7 +42,7 @@ export interface Project {
   style: Style | null;
   slides: Slide[];
   cost: CostInfo;
-  image_engine: "gemini" | "volcengine";
+  image_engine: "gemini" | "volcengine" | "nano_banana";
 }
 
 export interface ProjectSummary {

@@ -26,7 +26,7 @@ class Project:
     title: str = "Untitled"
     style: Style | None = None
     slides: list[Slide] = field(default_factory=list)
-    image_engine: str = "volcengine"  # "gemini" | "volcengine"
+    image_engine: str = "volcengine"  # "gemini" | "volcengine" | "nano_banana"
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
     cost: CostInfo = field(default_factory=CostInfo)

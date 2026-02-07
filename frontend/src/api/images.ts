@@ -22,7 +22,7 @@ export interface DeleteImageResponse {
 }
 
 export interface UpdateEngineRequest {
-  engine: "gemini" | "volcengine";
+  engine: "gemini" | "volcengine" | "nano_banana";
 }
 
 export interface UpdateEngineResponse {
@@ -31,7 +31,7 @@ export interface UpdateEngineResponse {
 }
 
 export interface GetEngineResponse {
-  engine: "gemini" | "volcengine";
+  engine: "gemini" | "volcengine" | "nano_banana";
 }
 
 export interface SelectImageResponse {
@@ -86,7 +86,7 @@ export const imagesApi = {
    */
   updateEngine(
     slug: string,
-    engine: "gemini" | "volcengine"
+    engine: "gemini" | "volcengine" | "nano_banana"
   ): Promise<UpdateEngineResponse> {
     return api.put<UpdateEngineResponse>(`/slides/${slug}/engine`, {
       engine,
