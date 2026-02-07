@@ -16,8 +16,8 @@ RUN uv pip install --system -e .
 # Copy application code
 COPY app ./app
 
-# Create slides directory
-RUN mkdir -p /app/slides
+# Create slides directory with open permissions (container may run as non-root)
+RUN mkdir -p /app/slides && chmod 777 /app/slides
 
 # Expose port
 EXPOSE 3003

@@ -17,7 +17,9 @@ ifneq ($(SERVICE),)
     endif
 endif
 
-# Docker compose command
+# Docker compose command with current user UID/GID for file permissions
+export UID := $(shell id -u)
+export GID := $(shell id -g)
 COMPOSE := docker compose
 
 help: ## Show this help message

@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: genslides-backend
     restart: unless-stopped
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3003:3003"
     environment:
@@ -17,11 +18,16 @@ services:
       # API Keys from .env file
       - ARK_API_KEY=${ARK_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # Nano Banana API configuration
+      - NANO_API_KEY=${NANO_API_KEY}
+      - NANO_BASE_URL=${NANO_BASE_URL}
+      - NANO_MODEL=${NANO_MODEL}
+      - NANO_IMAGE_SIZE=${NANO_IMAGE_SIZE}
       # CORS - allow frontend origin
       - CORS_ORIGINS=http://localhost,http://localhost:80,http://frontend
     volumes:
       # Persist slides data
-      - ./slides:/app/slides
+      - ./backend/slides:/app/slides
       # Development: mount source code (comment out for production)
       # - ./backend/app:/app/app
     networks:
