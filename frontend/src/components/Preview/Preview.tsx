@@ -2,7 +2,7 @@
  * Preview component - main image display with floating thumbnail list
  */
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useRef, useState, useEffect } from "react";
 import { MainImage } from "./MainImage";
 import { ThumbnailList } from "./ThumbnailList";
 import { useSlidesStore, useSelectedSlide, useStyleStore, useUIStore } from "@/stores";
@@ -79,6 +79,41 @@ export function Preview({ onGenerate, onDeleteImage }: PreviewProps): JSX.Elemen
   const hasMatchedImage = images.some((img) => img.matched);
   const needsGeneration = slide && slide.content.trim() && !hasMatchedImage;
 
+  // Calculate optimal 16:9 image dimensions to fit within container
+  const imageAreaRef = useRef<HTMLDivElement>(null);
+  const [imageDims, setImageDims] = useState<{ w: number; h: number } | null>(null);
+  const hasSlide = !!slide;
+
+  useEffect(() => {
+    const el = imageAreaRef.current;
+    if (!el) {
+      setImageDims(null);
+      return;
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      if (width <= 0 || height <= 0) return;
+
+      const ASPECT = 16 / 9;
+      const SHADOW = 6; // reserve space for box-shadow offset
+      const maxW = width - SHADOW;
+      const maxH = height - SHADOW;
+
+      let w = maxW;
+      let h = w / ASPECT;
+      if (h > maxH) {
+        h = maxH;
+        w = h * ASPECT;
+      }
+
+      setImageDims({ w: Math.round(w), h: Math.round(h) });
+    });
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasSlide]);
+
   if (!slide) {
     return (
       <div className="flex h-full flex-col items-center justify-center bg-[var(--md-cream)]">
@@ -108,10 +143,15 @@ export function Preview({ onGenerate, onDeleteImage }: PreviewProps): JSX.Elemen
   return (
     <div className="flex h-full flex-col bg-[var(--md-cream)] overflow-auto">
       {/* Main image area with thumbnails anchored below */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-1 min-h-0">
-        {/* Image - sizes to content, can shrink when space is tight */}
-        <div className="w-full min-h-0">
-          <MainImage image={displayedImage} isGenerating={isGenerating} hasMatchedImage={hasMatchedImage} />
+      <div className="relative flex-1 flex flex-col px-4 py-1 min-h-0">
+        {/* Image area - measured by ResizeObserver for aspect-ratio fitting */}
+        <div ref={imageAreaRef} className="flex-1 min-h-0 w-full flex items-center justify-center">
+          <div
+            style={imageDims ? { width: imageDims.w, height: imageDims.h } : undefined}
+            className={!imageDims ? "w-full aspect-video" : undefined}
+          >
+            <MainImage image={displayedImage} isGenerating={isGenerating} hasMatchedImage={hasMatchedImage} />
+          </div>
         </div>
 
         {/* Thumbnail list anchored directly below image border */}
