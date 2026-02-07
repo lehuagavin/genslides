@@ -41,6 +41,7 @@ export interface Project {
   style: Style | null;
   slides: Slide[];
   cost: CostInfo;
+  image_engine: "gemini" | "volcengine";
 }
 
 export interface ProjectSummary {

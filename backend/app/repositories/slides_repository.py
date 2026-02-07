@@ -168,6 +168,7 @@ class SlidesRepository:
             title=data.get("title", "Untitled"),
             style=style,
             slides=slides,
+            image_engine=data.get("image_engine", "volcengine"),
             created_at=datetime.fromisoformat(data["created_at"]),
             updated_at=datetime.fromisoformat(data["updated_at"]),
             cost=cost,
@@ -177,6 +178,7 @@ class SlidesRepository:
         """Serialize project to YAML-compatible dict."""
         data: dict[str, Any] = {
             "title": project.title,
+            "image_engine": project.image_engine,
             "created_at": project.created_at.isoformat(),
             "updated_at": project.updated_at.isoformat(),
             "slides": [],

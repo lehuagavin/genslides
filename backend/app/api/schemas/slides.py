@@ -55,6 +55,7 @@ class ProjectResponse(BaseModel):
     style: StyleResponse | None = None
     slides: list[SlideResponse]
     cost: CostResponse
+    image_engine: str = "volcengine"  # "gemini" | "volcengine"
 
 
 class UpdateTitleRequest(BaseModel):

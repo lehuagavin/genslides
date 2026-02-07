@@ -118,6 +118,7 @@ async def get_project(
             estimated_cost=project.cost.estimated_cost,
             breakdown=cost_service.get_breakdown(project.cost),
         ),
+        image_engine=project.image_engine,
     )
 
 
@@ -171,29 +172,6 @@ async def reorder_slides(
     )
 
 
-@router.put("/{slug}/{sid}", response_model=SlideResponse)
-async def update_slide(
-    slug: str,
-    sid: str,
-    request: UpdateSlideRequest,
-    service: Annotated[SlidesService, Depends(get_slides_service)],
-) -> SlideResponse:
-    """Update slide content."""
-    slide = await service.update_slide(slug, sid, request.content)
-    return _slide_to_response(slide, slug)
-
-
-@router.delete("/{slug}/{sid}", response_model=DeleteSlideResponse)
-async def delete_slide(
-    slug: str,
-    sid: str,
-    service: Annotated[SlidesService, Depends(get_slides_service)],
-) -> DeleteSlideResponse:
-    """Delete a slide."""
-    await service.delete_slide(slug, sid)
-    return DeleteSlideResponse(success=True, deleted_sid=sid)
-
-
 @router.get("/{slug}/cost", response_model=CostResponse)
 async def get_cost(
     slug: str,
@@ -244,3 +222,28 @@ async def update_image_engine(
         success=True,
         engine=project.image_engine,
     )
+
+
+# NOTE: Wildcard routes /{slug}/{sid} MUST be defined last to avoid
+# intercepting specific sub-routes like /{slug}/engine, /{slug}/cost, etc.
+@router.put("/{slug}/{sid}", response_model=SlideResponse)
+async def update_slide(
+    slug: str,
+    sid: str,
+    request: UpdateSlideRequest,
+    service: Annotated[SlidesService, Depends(get_slides_service)],
+) -> SlideResponse:
+    """Update slide content."""
+    slide = await service.update_slide(slug, sid, request.content)
+    return _slide_to_response(slide, slug)
+
+
+@router.delete("/{slug}/{sid}", response_model=DeleteSlideResponse)
+async def delete_slide(
+    slug: str,
+    sid: str,
+    service: Annotated[SlidesService, Depends(get_slides_service)],
+) -> DeleteSlideResponse:
+    """Delete a slide."""
+    await service.delete_slide(slug, sid)
+    return DeleteSlideResponse(success=True, deleted_sid=sid)

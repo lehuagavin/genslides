@@ -31,7 +31,9 @@ export interface StyleTemplate {
   type: StyleType;
   name: string;
   name_en: string;
-  description: string;
+  tagline: string;          // 一句话简介，用于卡片展示
+  emoji: string;            // 代表性 emoji，用于视觉辨识
+  description: string;      // 详细风格描述（用于 AI 图像生成提示词）
   preview_prompt: string;
 }
 

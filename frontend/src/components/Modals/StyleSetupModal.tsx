@@ -1,5 +1,5 @@
 /**
- * Initial style setup modal
+ * Initial style setup modal — card-grid template picker
  */
 
 import { useState, useEffect } from "react";
@@ -24,7 +24,6 @@ export function StyleSetupModal({
     candidates,
     isGenerating,
     closeSetupModal,
-    // 风格模板相关
     templates,
     selectedTemplate,
     isLoadingTemplates,
@@ -33,6 +32,7 @@ export function StyleSetupModal({
 
   const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showPromptDetail, setShowPromptDetail] = useState(false);
 
   // 当模板更新后，如果没有有效选中模板，自动选择第一个
   useEffect(() => {
@@ -47,11 +47,10 @@ export function StyleSetupModal({
     }
   }, [templates, selectedTemplate, showSetupModal, selectTemplate]);
 
-  const handleTemplateChange = (templateType: string) => {
-    const template = templates.find((t) => t.type === templateType);
-    selectTemplate(template || null);
-    // 清除之前的候选图片
+  const handleTemplateSelect = (template: StyleTemplate) => {
+    selectTemplate(template);
     setSelectedCandidate(null);
+    setShowPromptDetail(false);
   };
 
   const handleGenerate = async () => {
@@ -81,67 +80,92 @@ export function StyleSetupModal({
     <Modal
       isOpen={showSetupModal}
       onClose={closeSetupModal}
-      title="设置项目风格"
-      className="max-w-2xl"
+      title="选择演示风格"
+      className="max-w-3xl"
       showCloseButton={false}
     >
-      <p className="mb-4 text-[var(--md-slate)]">
-        选择一个预设风格模板，然后生成风格参考图片。
+      <p className="mb-5 text-sm text-[var(--md-slate)]">
+        选择一种视觉风格，所有幻灯片将使用该风格生成图片。
       </p>
 
-      {/* 风格模板选择器 */}
-      <div className="mb-4">
-        <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
-          选择风格模板
-        </label>
-        {isLoadingTemplates ? (
-          <div className="py-2">
-            <Loading size="sm" text="加载模板中..." />
-          </div>
-        ) : (
-          <select
-            value={selectedTemplate?.type || ""}
-            onChange={(e) => handleTemplateChange(e.target.value)}
-            className="w-full rounded border border-[var(--md-graphite)] bg-white px-3 py-2 text-gray-900 focus:border-[var(--md-sky)] focus:outline-none"
-          >
-            <option value="" disabled className="bg-white text-gray-900">
-              -- 选择模板 --
-            </option>
-            {templates.map((template: StyleTemplate) => (
-              <option key={template.type} value={template.type} className="bg-white text-gray-900">
-                🎨 {template.name} ({template.name_en})
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-
-      {/* 风格描述展示 */}
-      <div className="mb-6">
-        <label className="mb-2 block text-sm font-bold uppercase tracking-wider">
-          风格描述
-        </label>
-        <div
-          className={cn(
-            "min-h-[160px] rounded border border-[var(--md-graphite)] bg-[var(--md-fog)] px-4 py-3 text-sm",
-            "whitespace-pre-line text-[var(--md-ink)]",
-            !selectedTemplate && "text-[var(--md-slate)]"
-          )}
-        >
-          {selectedTemplate ? selectedTemplate.description : "请选择风格模板以查看描述"}
+      {/* 风格卡片网格 */}
+      {isLoadingTemplates ? (
+        <div className="py-6">
+          <Loading size="sm" text="加载风格模板..." />
         </div>
-        <p className="mt-1 text-xs text-[var(--md-slate)]">
-          选择模板后即可生成风格参考图
-        </p>
-        <Button
-          onClick={handleGenerate}
-          disabled={!selectedTemplate?.description?.trim() || isGenerating}
-          isLoading={isGenerating}
-          className="mt-3"
-        >
-          生成风格图片
-        </Button>
-      </div>
+      ) : (
+        <div className="mb-5 grid grid-cols-3 gap-2.5 max-h-[340px] overflow-y-auto pr-1">
+          {templates.map((template: StyleTemplate) => {
+            const isSelected = selectedTemplate?.type === template.type;
+            return (
+              <button
+                key={template.type}
+                onClick={() => handleTemplateSelect(template)}
+                className={cn(
+                  "group relative flex flex-col items-start gap-1 rounded border-2 px-3 py-2.5 text-left transition-all",
+                  "hover:border-[var(--md-sky)] hover:bg-[var(--md-soft-blue)]",
+                  isSelected
+                    ? "border-[var(--md-sky-strong)] bg-[var(--md-soft-blue)] shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                    : "border-[var(--md-graphite)] bg-[var(--md-cloud)]"
+                )}
+              >
+                <div className="flex w-full items-center gap-2">
+                  <span className="text-lg leading-none">{template.emoji}</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--md-ink)] truncate">
+                    {template.name}
+                  </span>
+                </div>
+                <p className="text-[11px] leading-snug text-[var(--md-slate)] line-clamp-2 normal-case">
+                  {template.tagline}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 选中模板信息 + 生成按钮 */}
+      {selectedTemplate && (
+        <div className="mb-5 rounded border border-[var(--md-graphite)] bg-[var(--md-fog)] px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">{selectedTemplate.emoji}</span>
+              <span className="text-sm font-bold text-[var(--md-ink)]">
+                {selectedTemplate.name}
+              </span>
+              <span className="text-xs text-[var(--md-slate)]">
+                {selectedTemplate.name_en}
+              </span>
+            </div>
+            <button
+              onClick={() => setShowPromptDetail(!showPromptDetail)}
+              className="text-xs text-[var(--md-slate)] hover:text-[var(--md-ink)] transition-colors normal-case"
+            >
+              {showPromptDetail ? "收起详情" : "查看 AI 提示词"}
+            </button>
+          </div>
+
+          {showPromptDetail && (
+            <div className="mt-3 max-h-[120px] overflow-y-auto rounded bg-[var(--md-cloud)] px-3 py-2 text-xs leading-relaxed text-[var(--md-ink)] whitespace-pre-line normal-case border border-[var(--md-grid-line)]">
+              {selectedTemplate.description}
+            </div>
+          )}
+
+          <div className="mt-3 flex items-center gap-3">
+            <Button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              isLoading={isGenerating}
+              size="sm"
+            >
+              生成风格图片
+            </Button>
+            <span className="text-xs text-[var(--md-slate)] normal-case">
+              将根据此风格生成参考图供选择
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Loading state */}
       {isGenerating && (
@@ -152,7 +176,7 @@ export function StyleSetupModal({
 
       {/* Candidates */}
       {candidates.length > 0 && !isGenerating && (
-        <div className="mb-6">
+        <div className="mb-5">
           <label className="mb-3 block text-sm font-bold uppercase tracking-wider">
             选择一张图片作为项目风格参考
           </label>
@@ -162,10 +186,10 @@ export function StyleSetupModal({
                 key={candidate.id}
                 onClick={() => setSelectedCandidate(candidate.id)}
                 className={cn(
-                  "relative aspect-video overflow-hidden border-2 transition-all",
+                  "relative aspect-video overflow-hidden rounded border-2 transition-all",
                   "hover:border-[var(--md-sky)]",
                   selectedCandidate === candidate.id
-                    ? "border-[var(--md-sky-strong)] ring-2 ring-[var(--md-sky)]"
+                    ? "border-[var(--md-sky-strong)] ring-2 ring-[var(--md-sky)] shadow-[3px_3px_0_0_rgba(0,0,0,1)]"
                     : "border-[var(--md-graphite)]"
                 )}
               >
@@ -200,7 +224,7 @@ export function StyleSetupModal({
       {/* Actions */}
       {candidates.length > 0 && !isGenerating && (
         <div className="flex justify-end gap-3">
-          <Button variant="secondary" onClick={handleGenerate}>
+          <Button variant="secondary" onClick={handleGenerate} size="sm">
             重新生成
           </Button>
           <Button

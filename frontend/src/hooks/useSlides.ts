@@ -23,6 +23,7 @@ export function useSlides(slug: string, initialTitle?: string | null) {
     setCost,
     setLoading,
     setError,
+    setImageEngine,
   } = useSlidesStore();
 
   const { setStyle, openSetupModal } = useStyleStore();
@@ -62,6 +63,7 @@ export function useSlides(slug: string, initialTitle?: string | null) {
         setSlides(project.slides);
         setCost(project.cost);
         setStyle(project.style);
+        setImageEngine(project.image_engine);
 
         // Open style setup if no style is set
         if (!project.style) {
@@ -88,6 +90,7 @@ export function useSlides(slug: string, initialTitle?: string | null) {
     setSlides,
     setCost,
     setStyle,
+    setImageEngine,
     setLoading,
     setError,
     openSetupModal,
